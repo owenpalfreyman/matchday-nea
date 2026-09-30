@@ -14,6 +14,8 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <div className="dark min-h-screen bg-background text-foreground">
+      <RouterProvider router={router} />
+    </div>
   </StrictMode>,
 )
