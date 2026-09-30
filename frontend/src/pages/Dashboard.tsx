@@ -3,25 +3,33 @@ import { useEffect, useState } from "react"
 import { supabase } from "@/lib/supabase"
 
 const Dashboard = () => {
-  const [userName, setUserName] = useState("there")
+  const [userName, setUserName] = useState("Mr. Mysterious")
 
   useEffect(() => {
-    let isMounted = true
+    async function loadPlayer() {
+      const result = await supabase.auth.getUser()
+      const user = result.data.user
 
-    async function loadUserName() {
-      // Read the authenticated profile after the OAuth call
-      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        return
+      }
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("display_name")
+        .eq("id", user.id)
+        .maybeSingle()
 
-      // If neither happens, there is an empty reutrn preventing the setUserName
-      if (!isMounted || !user) return
+        if (error) {
+          console.error(error)
+          return
+        }
 
-      const metadata = user.user_metadata as { name?: string }
-      // Use the display name stored in the Supabase user metadata.
-      setUserName(metadata.name || user.email || "there")
+        setUserName(data?.display_name || "mate")
     }
 
-    void loadUserName()
+      void loadPlayer()
   }, [])
+  
 
   return (
     <div className="flex min-h-screen items-center justify-center text-foreground">
