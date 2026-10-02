@@ -6,13 +6,16 @@ import App from './App.tsx'
 import Login from './pages/Login.tsx'
 import Dashboard from "./pages/Dashboard.tsx"
 import ProtectedRoutes from "./components/ProtectedRoutes.tsx"
+import DashboardLayout from "./layouts/DashboardLayout.tsx"
 
 const router = createBrowserRouter([
   { path: "/", element: <App /> },
   { path: "/login", element: <Login /> },
   { element: <ProtectedRoutes />, children: 
     [{ 
-      path: "/dashboard", element: <Dashboard />
+      path: "/dashboard",
+      element: <DashboardLayout />,
+      children: [{ index: true, element: <Dashboard /> }],
     }]}
 ])
 
