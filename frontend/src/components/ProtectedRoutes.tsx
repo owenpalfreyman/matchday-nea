@@ -25,7 +25,7 @@ const ProtectedRoutes = () => {
         };
 
         // Subscribe to changes in the auth state and update the session
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((error, session) => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
             setSession(session)
         });
 

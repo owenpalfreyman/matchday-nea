@@ -6,20 +6,28 @@ import App from './App.tsx'
 import Login from './pages/Login.tsx'
 import Dashboard from "./pages/Dashboard.tsx"
 import ProtectedRoutes from "./components/ProtectedRoutes.tsx"
+import DashboardLayout from "./layouts/DashboardLayout.tsx"
+import Organisations from "./pages/Organisations.tsx"
+import { ThemeProvider } from "./components/ThemeProvider.tsx"
 
 const router = createBrowserRouter([
   { path: "/", element: <App /> },
   { path: "/login", element: <Login /> },
   { element: <ProtectedRoutes />, children: 
     [{ 
-      path: "/dashboard", element: <Dashboard />
+      path: "/dashboard",
+      element: <DashboardLayout />,
+      children: [
+        { index: true, element: <Dashboard /> },
+        { path: "organisations", element: <Organisations /> },
+      ],
     }]}
 ])
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <div className="dark min-h-screen bg-background text-foreground">
+    <ThemeProvider>
       <RouterProvider router={router} />
-    </div>
+    </ThemeProvider>
   </StrictMode>,
 )
