@@ -1,3 +1,4 @@
+import CreateOrgForm from '@/components/CreateOrgForm'
 import { supabase } from '@/lib/supabase'
 import React, { useEffect, useState } from 'react'
 
@@ -41,7 +42,7 @@ const Organisations = () => {
 
   // Conditionally render the page
   if (org.status === "loading") return <div>Loading</div>
-  if (org.status === "none") return <div>Create organisation form</div>
+  if (org.status === "none") return <CreateOrgForm />
   if (org.status === "error") return <div>Error. Try refreshing the page.</div>
   if (org.status === "member") return <div>Your organisation's page</div>
 
