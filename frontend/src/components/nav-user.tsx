@@ -55,8 +55,6 @@ export function NavUser() {
         .eq("id", user.id)
         .maybeSingle()
 
-      console.log(data)
-
       if (error) {
         console.error("No user profile found.")
       }
