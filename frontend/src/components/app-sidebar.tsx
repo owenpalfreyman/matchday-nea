@@ -44,7 +44,7 @@ const data = {
   projects: [
     {
       name: "Organisations",
-      url: "#",
+      url: "/dashboard/organisations",
       icon: (
         <FrameIcon
         />
