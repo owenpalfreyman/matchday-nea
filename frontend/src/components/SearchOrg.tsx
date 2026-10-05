@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { FieldLegend, FieldSet, FieldDescription, FieldGroup, Field, FieldLabel } from './ui/field'
 import { Card } from './ui/card'
 import { Input } from './ui/input'
+import { supabase } from '@/lib/supabase'
 
 type SearchState =
   | { status: 'idle' }
@@ -37,7 +38,22 @@ const SearchOrg = () => {
 
       console.log("Debounced term:", debounceTerm)
 
-      // Todo: Implement Supabase DB query
+      async function queryDatabase () {
+        const { data, error } = await supabase
+          .from("organisations")
+          .select()
+          .ilike("name", `%${term}%`)
+
+          if (error) {
+            console.error("Error retrieving search result", error)
+            return
+          }
+
+          console.log(data)
+      }
+
+      queryDatabase()
+
     }, [debounceTerm])
 
 
