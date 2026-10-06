@@ -96,7 +96,7 @@ const SearchOrg = () => {
 
       {searchStatus.status === 'results' && (
         searchStatus.orgs.map((org) => (
-          <OrgResultRow org={org} />
+          <OrgResultRow org={org} key={org.id} />
         ))
       )}
 
