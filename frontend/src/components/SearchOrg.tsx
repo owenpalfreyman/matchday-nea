@@ -3,6 +3,7 @@ import { FieldLegend, FieldSet, FieldDescription, FieldGroup, Field, FieldLabel 
 import { Card } from './ui/card'
 import { Input } from './ui/input'
 import { supabase } from '@/lib/supabase'
+import OrgResultRow from './OrgResultRow'
 
 // Define types to satisfy TypeScript
 type Org = {
@@ -92,6 +93,24 @@ const SearchOrg = () => {
           </Field>
         </FieldGroup>
       </FieldSet>
+
+      {searchStatus.status === 'results' && (
+        searchStatus.orgs.map((org) => (
+          <OrgResultRow org={org} />
+        ))
+      )}
+
+      {searchStatus.status === 'loading' && (
+        <p className="mt-4 text-sm text-gray-500">Searching...</p>
+      )}
+
+      {searchStatus.status === 'empty' && (
+        <p className="mt-4 text-sm text-gray-500">No organisations found.</p>
+      )}
+
+      {searchStatus.status === 'error' && (
+        <p className="mt-4 text-sm text-red-500">An error occurred while searching. Please try again.</p>
+      )}
 
     </Card>
   )
