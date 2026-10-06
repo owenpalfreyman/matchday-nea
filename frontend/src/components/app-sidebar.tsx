@@ -52,7 +52,7 @@ const data = {
     },
     {
       name: "Leagues",
-      url: "#",
+      url: "/dashboard/leagues",
       icon: (
         <PieChartIcon
         />

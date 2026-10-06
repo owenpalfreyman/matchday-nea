@@ -9,6 +9,7 @@ import ProtectedRoutes from "./components/ProtectedRoutes.tsx"
 import DashboardLayout from "./layouts/DashboardLayout.tsx"
 import Organisations from "./pages/Organisations.tsx"
 import { ThemeProvider } from "./components/ThemeProvider.tsx"
+import Leagues from "./pages/Leagues.tsx"
 
 const router = createBrowserRouter([
   { path: "/", element: <App /> },
@@ -20,6 +21,7 @@ const router = createBrowserRouter([
       children: [
         { index: true, element: <Dashboard /> },
         { path: "organisations", element: <Organisations /> },
+        { path: "leagues", element: <Leagues />}
       ],
     }]}
 ])
