@@ -14,17 +14,32 @@ import { Input } from './ui/input'
 import { RadioGroup, RadioGroupItem } from './ui/radio-group'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select'
 import { Switch } from './ui/switch'
+import { Button } from './ui/button'
 
 const CreateLeagueForm = () => {
     const [leagueName, setLeagueName] = useState("")
-    const [leagueType, setLeagueType] = useState("")
+    const [teamBased, setTeamBased] = useState<boolean | null>(null)
     const [teamLeagueType, setTeamLeagueType] = useState("")
-    const [bestOf, setBestOf] = useState()
+    const [bestOf, setBestOf] = useState<string | undefined>()
+    const [includeDoubles, setIncludeDoubles] = useState(false)
 
-    // isTeamBased is true if the league type has been set to "team"
-    const isTeamBased = leagueType === "team"
     // isTeamRoundRobin is set to true is the team league type is set to "team-round-robin"
     const isTeamRoundRobin = teamLeagueType === "team-round-robin"
+
+    // Reset dependent state when the league type changes
+    function handleTeamBasedChange(value: string) {
+        setTeamBased(value === "true")
+        setTeamLeagueType("")
+        setBestOf(undefined)
+        setIncludeDoubles(false)
+    }
+
+    // Reset best of and doubles when the team league type changes
+    function handleTeamLeagueTypeChange(value: string) {
+        setTeamLeagueType(value)
+        setBestOf(undefined)
+        setIncludeDoubles(false)
+    }
 
     async function createLeague() {
         if (!leagueName.trim()) {
@@ -36,6 +51,7 @@ const CreateLeagueForm = () => {
             return
         }
 
+        console.log({ leagueName, teamBased, teamLeagueType, bestOf, includeDoubles })
         // Todo: Logic for the creation of a league in the table
     }
 
@@ -61,7 +77,10 @@ const CreateLeagueForm = () => {
 
                 <FieldSet>
                     <FieldLegend variant="label">League Type</FieldLegend>
-                    <RadioGroup value={leagueType} onValueChange={setLeagueType}>
+                    <RadioGroup
+                        value={teamBased === null ? undefined : String(teamBased)}
+                        onValueChange={handleTeamBasedChange}
+                    >
                         <FieldLabel htmlFor="team-based">
                             <Field orientation="horizontal">
                                 <FieldContent>
@@ -70,7 +89,7 @@ const CreateLeagueForm = () => {
                                         Teams compete against each other, e.g. a football league.
                                     </FieldDescription>
                                 </FieldContent>
-                                <RadioGroupItem value="team" id="team-based" />
+                                <RadioGroupItem value="true" id="team-based" />
                             </Field>
                         </FieldLabel>
                         <FieldLabel htmlFor="individual">
@@ -81,17 +100,17 @@ const CreateLeagueForm = () => {
                                         Players compete one-on-one in their own standings.
                                     </FieldDescription>
                                 </FieldContent>
-                                <RadioGroupItem value="individual" id="individual" />
+                                <RadioGroupItem value="false" id="individual" />
                             </Field>
                         </FieldLabel>
                     </RadioGroup>
                 </FieldSet>
 
                 {/* Inputs for if the league type is Team Based */}
-                {isTeamBased && (
+                {teamBased === true && (
                     <FieldSet>
                         <FieldLegend variant="label">Team League Type</FieldLegend>
-                        <RadioGroup value={teamLeagueType} onValueChange={setTeamLeagueType}>
+                        <RadioGroup value={teamLeagueType} onValueChange={handleTeamLeagueTypeChange}>
                             <FieldLabel htmlFor="team-vs-team">
                                 <Field orientation="horizontal">
                                     <FieldContent>
@@ -119,7 +138,7 @@ const CreateLeagueForm = () => {
                 )}
 
                 {/* Inputs for if the league is a Team Round Robin */}
-                {isTeamBased && isTeamRoundRobin && (
+                {teamBased === true && isTeamRoundRobin && (
                     <FieldSet>
                         <FieldGroup>
                             <Field>
@@ -142,7 +161,7 @@ const CreateLeagueForm = () => {
                             </Field>
 
                             <FieldGroup className="w-full max-w-sm">
-                                <FieldLabel htmlFor="switch-notifications">
+                                <FieldLabel htmlFor="switch-doubles">
                                     <Field orientation="horizontal">
                                         <FieldContent>
                                             <FieldTitle>Include Doubles</FieldTitle>
@@ -150,7 +169,7 @@ const CreateLeagueForm = () => {
                                                 Have a doubles match included within the team round robin - this will contribute to the team sets.
                                             </FieldDescription>
                                         </FieldContent>
-                                        <Switch id="switch-notifications" />
+                                        <Switch id="switch-doubles" checked={includeDoubles} onCheckedChange={setIncludeDoubles} />
                                     </Field>
                                 </FieldLabel>
                             </FieldGroup>
@@ -158,6 +177,32 @@ const CreateLeagueForm = () => {
                         </FieldGroup>
                     </FieldSet>
                 )}
+
+                {/* Inputs for if the league is not team-based */}
+                {teamBased === false && teamBased !== null && (
+                    <Field>
+                        <FieldLabel htmlFor="bestOf">
+                            <Select value={bestOf} onValueChange={setBestOf}>
+                                <SelectTrigger id="bestOf">
+                                    <SelectValue placeholder="Select number of sets" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="1">1</SelectItem>
+                                    <SelectItem value="3">3</SelectItem>
+                                    <SelectItem value="5">5</SelectItem>
+                                    <SelectItem value="7">7</SelectItem>
+                                </SelectContent>
+                            </Select>
+                            <FieldDescription>
+                                The maximum number of sets to be played in each game.
+                            </FieldDescription>
+                        </FieldLabel>
+                    </Field>
+                )}
+
+                <Button className="mt-4" onClick={createLeague}>
+                    Create League
+                </Button>
 
             </FieldGroup>
         </FieldSet>
