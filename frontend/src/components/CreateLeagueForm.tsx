@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Card } from './ui/card'
 import {
   Field,
@@ -17,30 +17,49 @@ import { Switch } from './ui/switch'
 import { Button } from './ui/button'
 
 const CreateLeagueForm = () => {
+    // useStates
     const [leagueName, setLeagueName] = useState("")
     const [teamBased, setTeamBased] = useState<boolean | null>(null)
-    const [teamLeagueType, setTeamLeagueType] = useState("")
+    const [teamLeagueType, setTeamLeagueType] = useState<string | null>(null)
     const [bestOf, setBestOf] = useState<string | undefined>()
     const [includeDoubles, setIncludeDoubles] = useState(false)
+    const [useDefaultRoster, setUseDefaultRoster] = useState(false)
+    const [minSquadSize, setMinSquadSize] = useState<number>()
+    const [maxSquadSize, setMaxSquadSize] = useState<number>()
+    const [squadSize, setSquadSize] = useState<number>()
 
-    // isTeamRoundRobin is set to true is the team league type is set to "team-round-robin"
+
+
+    // isTeamRoundRobin is set to true if the team league type is set to "team-round-robin"
     const isTeamRoundRobin = teamLeagueType === "team-round-robin"
 
     // Reset dependent state when the league type changes
     function handleTeamBasedChange(value: string) {
         setTeamBased(value === "true")
-        setTeamLeagueType("")
+        setTeamLeagueType(null)
         setBestOf(undefined)
         setIncludeDoubles(false)
     }
 
-    // Reset best of and doubles when the team league type changes
+    // Reset values when the team league type changes
     function handleTeamLeagueTypeChange(value: string) {
         setTeamLeagueType(value)
         setBestOf(undefined)
         setIncludeDoubles(false)
+        setMaxSquadSize(undefined)
+        setMinSquadSize(undefined)
+        setSquadSize(undefined)
+        setUseDefaultRoster(false)
     }
 
+    function handleUseDefaultRosterChange(value: boolean) {
+        setUseDefaultRoster(value)
+        setMaxSquadSize(undefined)
+        setMinSquadSize(undefined)
+        setSquadSize(undefined)
+    }
+
+    // Checks inputs and pushes the data into the table
     async function createLeague() {
         if (!leagueName.trim()) {
             alert("Please enter a league name")
@@ -51,7 +70,47 @@ const CreateLeagueForm = () => {
             return
         }
 
-        console.log({ leagueName, teamBased, teamLeagueType, bestOf, includeDoubles })
+        // Following block should only run if teamBased
+        if (teamBased) {
+            // Default rosters use one squad size
+            if (useDefaultRoster) {
+                if (squadSize === undefined) {
+                    alert("Please enter a squad size")
+                    return
+                }
+                // Range checks for the squadSize
+                if (squadSize < 1) {
+                    alert("Please enter a valid squad size")
+                    return
+                }
+            } else {
+                // Checks to see if either value is undefined
+                if (minSquadSize === undefined || maxSquadSize === undefined) {
+                    alert("Please enter a minimum and maximum squad size")
+                    return
+                }
+                // Checks to see if either the maximum or minimum squad size is less than 1
+                if (minSquadSize < 1 || maxSquadSize < 1) {
+                    alert("Please enter a valid squad size")
+                    return
+                }
+                // Checks for whether the minimum squad size is greater than the maximum squad size
+                if (minSquadSize > maxSquadSize) {
+                    alert("The minimum squad size cannot be greater than the maximum squad size")
+                    return
+                }
+            }
+        }
+
+        // Checks to make sure the best of value is entered when appropriate
+        if (teamLeagueType !== "team-vs-team") {
+            if (bestOf === undefined) {
+                alert("Please enter a best of value")
+                return
+            }
+        }
+
+        console.log({ leagueName, teamBased, teamLeagueType, bestOf, includeDoubles, useDefaultRoster, minSquadSize, maxSquadSize, squadSize })
         // Todo: Logic for the creation of a league in the table
     }
 
@@ -110,7 +169,7 @@ const CreateLeagueForm = () => {
                 {teamBased === true && (
                     <FieldSet>
                         <FieldLegend variant="label">Team League Type</FieldLegend>
-                        <RadioGroup value={teamLeagueType} onValueChange={handleTeamLeagueTypeChange}>
+                        <RadioGroup value={teamLeagueType ?? ""} onValueChange={handleTeamLeagueTypeChange}>
                             <FieldLabel htmlFor="team-vs-team">
                                 <Field orientation="horizontal">
                                     <FieldContent>
@@ -137,13 +196,43 @@ const CreateLeagueForm = () => {
                     </FieldSet>
                 )}
 
+                {/* Inputs for if the league is team vs team */}
+                {teamBased === true && teamLeagueType === "team-vs-team" && (
+                    <FieldGroup>
+                        <Field>
+                            <FieldLabel>Min Squad Size</FieldLabel>
+                            <Input
+                                id="minSquadSize"
+                                type="number"
+                                inputMode="numeric"
+                                min={1}
+                                step={1}
+                                value={minSquadSize ?? ""}
+                                onChange={(event) => setMinSquadSize(event.target.value ? Number(event.target.value) : undefined)}
+                            />
+                        </Field>
+                        <Field>
+                            <FieldLabel>Max Squad Size</FieldLabel>
+                            <Input
+                                id="maxSquadSize"
+                                type="number"
+                                inputMode="numeric"
+                                min={minSquadSize ?? 1}
+                                step={1}
+                                value={maxSquadSize ?? ""}
+                                onChange={(event) => setMaxSquadSize(event.target.value ? Number(event.target.value) : undefined)}
+                            />
+                        </Field>
+                    </FieldGroup>
+                )}
+
                 {/* Inputs for if the league is a Team Round Robin */}
                 {teamBased === true && isTeamRoundRobin && (
                     <FieldSet>
                         <FieldGroup>
                             <Field>
                                 <FieldLabel htmlFor="bestOf">
-                                    <Select value={bestOf} onValueChange={setBestOf}>
+                                    <Select value={bestOf} onValueChange={(value) => setBestOf(value ?? undefined)}>
                                         <SelectTrigger id="bestOf">
                                             <SelectValue placeholder="Select number of sets" />
                                         </SelectTrigger>
@@ -172,17 +261,78 @@ const CreateLeagueForm = () => {
                                         <Switch id="switch-doubles" checked={includeDoubles} onCheckedChange={setIncludeDoubles} />
                                     </Field>
                                 </FieldLabel>
+                                <FieldLabel htmlFor="switch-default-roster">
+                                    <Field orientation="horizontal">
+                                        <FieldContent>
+                                            <FieldTitle>Use a Default Roster</FieldTitle>
+                                            <FieldDescription>
+                                                Have each team use a default roster - each player in a team will play every match.
+                                            </FieldDescription>
+                                        </FieldContent>
+                                        <Switch id="switch-default-roster" checked={useDefaultRoster} onCheckedChange={handleUseDefaultRosterChange} />
+                                    </Field>
+                                </FieldLabel>
                             </FieldGroup>
 
                         </FieldGroup>
                     </FieldSet>
                 )}
 
+                {/* Inputs if the league uses a default roster */}
+                {teamBased === true && isTeamRoundRobin && useDefaultRoster === true && (
+                    <Field>
+                        <FieldLabel htmlFor="squadSize">Default Roster Squad Size</FieldLabel>
+                        <Input
+                            id="squadSize"
+                            type="number"
+                            inputMode="numeric"
+                            min={1}
+                            step={1}
+                            value={squadSize ?? ""}
+                            onChange={(event) =>
+                                setSquadSize(event.target.value ? Number(event.target.value) : undefined
+                                )
+                            }
+                        />
+                    </Field>
+                )}
+
+                {/* Inputs if the league does not use a default roster */}
+                {teamBased === true && isTeamRoundRobin && useDefaultRoster === false && (
+                    <FieldGroup>
+                        <Field>
+                            <FieldLabel>Min Squad Size</FieldLabel>
+                            <Input
+                                id="minSquadSize"
+                                type="number"
+                                inputMode="numeric"
+                                min={1}
+                                step={1}
+                                value={minSquadSize ?? ""}
+                                onChange={(event) => setMinSquadSize(event.target.value ? Number(event.target.value) : undefined)}
+                            />
+                        </Field>
+                        <Field>
+                            <FieldLabel>Max Squad Size</FieldLabel>
+                            <Input
+                                id="maxSquadSize"
+                                type="number"
+                                inputMode="numeric"
+                                min={minSquadSize ?? 1}
+                                step={1}
+                                value={maxSquadSize ?? ""}
+                                onChange={(event) => setMaxSquadSize(event.target.value ? Number(event.target.value) : undefined)}
+                            />
+                        </Field>
+                    </FieldGroup>
+                )}
+
+
                 {/* Inputs for if the league is not team-based */}
                 {teamBased === false && teamBased !== null && (
                     <Field>
                         <FieldLabel htmlFor="bestOf">
-                            <Select value={bestOf} onValueChange={setBestOf}>
+                            <Select value={bestOf} onValueChange={(value) => setBestOf(value ?? undefined)}>
                                 <SelectTrigger id="bestOf">
                                     <SelectValue placeholder="Select number of sets" />
                                 </SelectTrigger>
