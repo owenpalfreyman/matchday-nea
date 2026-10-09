@@ -15,6 +15,7 @@ import { RadioGroup, RadioGroupItem } from './ui/radio-group'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select'
 import { Switch } from './ui/switch'
 import { Button } from './ui/button'
+import { supabase } from '@/lib/supabase'
 
 const CreateLeagueForm = () => {
     // useStates
@@ -111,7 +112,61 @@ const CreateLeagueForm = () => {
         }
 
         console.log({ leagueName, teamBased, teamLeagueType, bestOf, includeDoubles, useDefaultRoster, minSquadSize, maxSquadSize, squadSize })
+        
         // Todo: Logic for the creation of a league in the table
+
+        try {
+            // Fetch authenticated user
+            const { data: authData, error: authError } = await supabase.auth.getUser()
+
+            if (authError) {
+                console.error("User could not be found.", authError)
+                return
+            }
+
+            // Get the user's organisation for the insert
+            const { data: organisation, error: orgError } = await supabase
+                .from("organisations")
+                .select("id")
+                .single()
+
+            // Check to see if the user an admin to perform this action
+            const { data: member, error: memberError } = await supabase
+                .from("organisation_members")
+                .select("role")
+                .eq("organisation_id", organisation.id)
+                .eq("user_id", authData.user.id)
+                .single()
+                
+            if (memberError) {
+                console.error("User not found or does not have the required role", memberError)
+                return
+            }
+
+
+            // Insert record into leagues
+
+            // TODO: Variable links, min max and default entry conditions
+            if (member.role === "admin") {
+                if (defaultSquadSize !== undefined) {
+                    maxSquadSize = defaultSquadSize
+                    minSquadSize = defaultSquadSize
+                }
+                
+                const { data: league, error: insertError } = await supabase
+                    .from("leagues")
+                    .insert({
+                        name: leagueName.trim(),
+                        organisation_id: organisation.id,
+                        is_team_based: teamBased,
+                        result_format: resultFormat,
+                        best_of: bestOf ? parseInt(bestOf) : null,
+                        include_doubles: includeDoubles,
+                        uses_default_roster: useDefaultRoster,
+                        min_squad_size: minSquadSize,
+                        max_squad_size: maxSquadSize
+                    })
+        }
     }
 
   return (
