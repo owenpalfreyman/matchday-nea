@@ -40,6 +40,9 @@ const CreateLeagueForm = () => {
         setTeamLeagueType(null)
         setBestOf(undefined)
         setIncludeDoubles(false)
+        setMaxSquadSize(undefined)
+        setMinSquadSize(undefined)
+        setSquadSize(undefined)
     }
 
     // Reset values when the team league type changes
@@ -110,8 +113,6 @@ const CreateLeagueForm = () => {
                 return
             }
         }
-        
-        // Todo: Logic for the creation of a league in the table
 
             // Fetch authenticated user
             const { data: authData, error: authError } = await supabase.auth.getUser()
