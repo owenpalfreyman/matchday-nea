@@ -110,12 +110,9 @@ const CreateLeagueForm = () => {
                 return
             }
         }
-
-        console.log({ leagueName, teamBased, teamLeagueType, bestOf, includeDoubles, useDefaultRoster, minSquadSize, maxSquadSize, squadSize })
         
         // Todo: Logic for the creation of a league in the table
 
-        try {
             // Fetch authenticated user
             const { data: authData, error: authError } = await supabase.auth.getUser()
 
@@ -140,34 +137,42 @@ const CreateLeagueForm = () => {
                 
             if (memberError) {
                 console.error("User not found or does not have the required role", memberError)
+                alert("League not created - user not found or does not have the required role.")
                 return
             }
 
-
             // Insert record into leagues
+            const leagueMinSquadSize = useDefaultRoster ? squadSize : minSquadSize
+            const leagueMaxSquadSize = useDefaultRoster ? squadSize : maxSquadSize
 
-            // TODO: Variable links, min max and default entry conditions
+            // Function to convert the result format
+            function getResultFormat(): string {
+                if (teamBased === false) return "PlayerVsPlayer"
+                if (teamLeagueType === "team-round-robin") return "TeamRoundRobin"
+                return "TeamVsTeam"
+            }
+
             if (member.role === "admin") {
-                if (defaultSquadSize !== undefined) {
-                    maxSquadSize = defaultSquadSize
-                    minSquadSize = defaultSquadSize
-                }
-                
                 const { data: league, error: insertError } = await supabase
                     .from("leagues")
                     .insert({
                         name: leagueName.trim(),
                         organisation_id: organisation.id,
                         is_team_based: teamBased,
-                        result_format: resultFormat,
+                        result_format: getResultFormat(),
                         best_of: bestOf ? parseInt(bestOf) : null,
                         include_doubles: includeDoubles,
                         uses_default_roster: useDefaultRoster,
-                        min_squad_size: minSquadSize,
-                        max_squad_size: maxSquadSize
+                        min_squad_size: leagueMinSquadSize,
+                        max_squad_size: leagueMaxSquadSize
                     })
+                if (insertError) {
+                    console.error("Error inserting the record.", insertError)
+                } else {
+                    console.log(league)
+                }
+            }
         }
-    }
 
   return (
     <Card className="mx-auto w-full max-w-md p-6">
