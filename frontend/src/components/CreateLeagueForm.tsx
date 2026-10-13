@@ -132,7 +132,7 @@ const CreateLeagueForm = () => {
             const { data: member, error: memberError } = await supabase
                 .from("organisation_members")
                 .select("role")
-                .eq("organisation_id", organisation.id)
+                .eq("organisation_id", organisation?.id)
                 .eq("user_id", authData.user.id)
                 .single()
                 
@@ -158,7 +158,7 @@ const CreateLeagueForm = () => {
                     .from("leagues")
                     .insert({
                         name: leagueName.trim(),
-                        organisation_id: organisation.id,
+                        organisation_id: organisation?.id,
                         is_team_based: teamBased,
                         result_format: getResultFormat(),
                         best_of: bestOf ? parseInt(bestOf) : null,
