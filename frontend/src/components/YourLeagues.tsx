@@ -24,7 +24,6 @@ async function getLeagues(): Promise<League[]> {
 
     if (orgMemberError) {
         console.error("Could not find organisation for user:", orgMemberError)
-        alert("Could not find organisation for user. Are you in an organisation?")
     }
 
     // If user cannot be found
