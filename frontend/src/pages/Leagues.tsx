@@ -1,4 +1,5 @@
 import CreateLeagueForm from '@/components/CreateLeagueForm'
+import YourLeagues from '@/components/YourLeagues'
 import React from 'react'
 
 const Leagues = () => {
@@ -6,6 +7,7 @@ const Leagues = () => {
     <>
       <div>Here are your organisation's Leagues</div>
       <CreateLeagueForm />
+      <YourLeagues />
     </>
   )
 }
