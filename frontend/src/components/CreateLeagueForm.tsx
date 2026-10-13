@@ -176,7 +176,7 @@ const CreateLeagueForm = () => {
         }
 
   return (
-    <Card className="mx-auto w-full max-w-md p-6">
+    <Card className="w-full max-w-md p-6">
         <FieldSet>
             <FieldLegend>Create League</FieldLegend>
             <FieldDescription>Now, time to make a league?</FieldDescription>
