@@ -31,7 +31,7 @@ const Leagues = () => {
         return
       }
 
-      setHasOrganisation(membership === null)
+      setHasOrganisation(membership !== null)
 
       if (membership === null) {
         console.log("User is not a member of an organisation")

@@ -38,7 +38,7 @@ async function getLeagues(): Promise<League[]> {
     const { data: leagues, error: leaguesError } = await supabase
         .from("leagues")
         .select("*")
-        .eq("organisation_id", orgMemberData.organisation_id)
+        .eq("organisation_id", orgMemberData?.organisation_id)
 
     if (leaguesError) {
         console.warn("No leagues found for organisation:", leaguesError)
