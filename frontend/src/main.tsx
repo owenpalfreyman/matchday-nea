@@ -10,6 +10,7 @@ import DashboardLayout from "./layouts/DashboardLayout.tsx"
 import Organisations from "./pages/Organisations.tsx"
 import { ThemeProvider } from "./components/ThemeProvider.tsx"
 import Leagues from "./pages/Leagues.tsx"
+import League from "./pages/League.tsx"
 
 const router = createBrowserRouter([
   { path: "/", element: <App /> },
@@ -21,7 +22,8 @@ const router = createBrowserRouter([
       children: [
         { index: true, element: <Dashboard /> },
         { path: "organisations", element: <Organisations /> },
-        { path: "leagues", element: <Leagues />}
+        { path: "leagues", element: <Leagues /> },
+        { path: "leagues/:leagueId", element: <League /> },
       ],
     }]}
 ])
