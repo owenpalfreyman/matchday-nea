@@ -11,12 +11,10 @@ const Leagues = () => {
 
   useEffect(() => {
     async function checkOrganisation() {
-      const { data: { user } } = await supabase.auth.getUser()
-
       // Fetch authenticated user
       const { data: authData, error: authError } = await supabase.auth.getUser()
 
-      if (authError || !user) {
+      if (authError || !authData.user) {
         console.error("User could not be found.", authError)
         return
       }
@@ -25,15 +23,22 @@ const Leagues = () => {
       const { data: membership, error: membershipError } = await supabase
         .from("organisation_members")
         .select("id")
-        .eq("user_id", user?.id)
+        .eq("user_id", authData.user.id)
         .maybeSingle()
+
+      if (membershipError) {
+        console.error("Could not find organisation membership.", membershipError)
+        return
+      }
+
+      setHasOrganisation(membership === null)
 
       if (membership === null) {
         console.log("User is not a member of an organisation")
-        setHasOrganisation(membership)
       }
     }
-  })
+    checkOrganisation()
+  }, [])
 
   return (
     <>
