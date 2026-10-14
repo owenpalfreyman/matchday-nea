@@ -15,21 +15,22 @@ async function getLeagues(): Promise<League[]> {
     // Fetch authenticated user
     const { data: authData, error: authError } = await supabase.auth.getUser()
 
+    // If user cannot be found
+    // The user should not be here - error for redirecting and protected routes (see main.tsx)
+    if (authError || !authData.user) {
+        console.error("Error fetching user:", authError)
+        return []
+    }
+
     // Check for which organisation the user is in
     const { data: orgMemberData, error: orgMemberError } = await supabase
         .from("organisation_members")
         .select("organisation_id")
-        .eq("user_id", authData.user?.id)
-        .single() // Should only be one organisation per user
+        .eq("user_id", authData.user.id)
+        .maybeSingle() // Should only be one organisation per user
 
     if (orgMemberError) {
         console.error("Could not find organisation for user:", orgMemberError)
-    }
-
-    // If user cannot be found
-    // The user should not be here - error for redirecting and protected routes (see main.tsx)
-    if (authError) {
-        console.error("Error fetching user:", authError)
         return []
     }
 
@@ -37,7 +38,7 @@ async function getLeagues(): Promise<League[]> {
     const { data: leagues, error: leaguesError } = await supabase
         .from("leagues")
         .select("*")
-        .eq("organisation_id", orgMemberData?.organisation_id)
+        .eq("organisation_id", orgMemberData.organisation_id)
 
     if (leaguesError) {
         console.warn("No leagues found for organisation:", leaguesError)
