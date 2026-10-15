@@ -44,7 +44,7 @@ const CreateOrgForm = () => {
             const { data: organisation, error: insertError } = await supabase
                 .from("organisations")
                 .insert({
-                  name: name.trim(), // For screenshot: modified to trim any additional whitespace
+                  name: name.trim(), // modified to trim any additional whitespace
                   owner_id: authData.user.id
                 })
               .select("id") // Returns the ID for later use
