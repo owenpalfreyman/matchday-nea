@@ -1,3 +1,4 @@
+import CreateTeamForm from '@/components/CreateTeamForm';
 import { supabase } from '@/lib/supabase';
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
@@ -39,7 +40,10 @@ const League = () => {
     
 
   return (
+    <>
     <div>League: {leagueId}</div>
+    <CreateTeamForm />
+    </>
   )
 }
 
