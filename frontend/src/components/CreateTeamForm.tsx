@@ -69,6 +69,13 @@ const CreateTeamForm = () => {
               .select("id") // Returns the ID for later use
               .single()
 
+            console.log("Team created:", team)
+
+            if (insertError) {
+                console.error("Could not create team", insertError)
+                return
+            }
+
 
           } catch (error) {
             console.error("Could not create team", error)
