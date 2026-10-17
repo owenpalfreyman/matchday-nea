@@ -42,7 +42,7 @@ const League = () => {
   return (
     <>
     <div>League: {leagueId}</div>
-    <CreateTeamForm />
+    <CreateTeamForm leagueId={leagueId} />
     </>
   )
 }

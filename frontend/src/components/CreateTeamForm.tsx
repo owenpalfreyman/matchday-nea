@@ -5,7 +5,7 @@ import { Input } from './ui/input'
 import { Button } from './ui/button'
 import { supabase } from '@/lib/supabase'
 
-const CreateTeamForm = () => {
+const CreateTeamForm = ({ leagueId }: { leagueId: string}) => {
     // State for field input and loading
     const [name, setName] = useState("")
     const [loading, setLoading] = useState(false)
@@ -42,18 +42,6 @@ const CreateTeamForm = () => {
                 return
             }
 
-            // Get the league ID
-            const { data: league, error: leagueError } = await supabase
-                .from("leagues")
-                .select("id")
-                .eq("organisation_id", organisation.id)
-                .single()
-
-            if (leagueError) {
-                console.error("Could not find league", leagueError)
-                return
-            }
-
             // TODO: Create the venue before the team so it can be used for the venue ID
 
             // Create record in teams table
@@ -62,9 +50,9 @@ const CreateTeamForm = () => {
                 .from("teams")
                 .insert({
                   organisation_id: organisation.id,
-                  league_id: league.id,
-                  name: name.trim(), // modified to trim any additional whitespace
-                  home_venue_id: null // Set to null for now, can be updated later
+                  league_id: leagueId,   // from props, not league.id
+                  name: name.trim(),
+                  home_venue_id: null
                 })
               .select("id") // Returns the ID for later use
               .single()
