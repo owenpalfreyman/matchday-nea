@@ -23,7 +23,7 @@ async function getLeague(leagueId: string) {
 
 const League = () => {
     const { leagueId } = useParams();
-    const [league, setLeague] = useState(null);
+    const [league, setLeague] = useState<{ id: string; organisation_id: string } | null>(null);
 
     useEffect(() => {
         if (!leagueId) return;
@@ -42,7 +42,12 @@ const League = () => {
   return (
     <>
     <div>League: {leagueId}</div>
-    <CreateTeamForm leagueId={leagueId} />
+    {league && (
+    <CreateTeamForm
+        leagueId={league.id}
+        organisationId={league.organisation_id}
+    />
+    )}
     </>
   )
 }

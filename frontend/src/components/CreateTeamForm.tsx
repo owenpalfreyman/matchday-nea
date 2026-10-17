@@ -5,7 +5,7 @@ import { Input } from './ui/input'
 import { Button } from './ui/button'
 import { supabase } from '@/lib/supabase'
 
-const CreateTeamForm = ({ leagueId }: { leagueId: string}) => {
+const CreateTeamForm = ({ leagueId, organisationId }: { leagueId: string; organisationId: string }) => {
     // State for field input and loading
     const [name, setName] = useState("")
     const [loading, setLoading] = useState(false)
@@ -22,26 +22,6 @@ const CreateTeamForm = ({ leagueId }: { leagueId: string}) => {
         setLoading(true)
 
         try {
-            // Fetch authenticated user
-            const { data: authData, error: authError } = await supabase.auth.getUser()
-            
-            if (authError) {
-                console.error("User could not be found.", authError)
-                return
-            }
-
-            // Get the currennt league ID, which first requires the organisation
-            const { data: organisation, error: orgError } = await supabase
-                .from("organisations")
-                .select("id")
-                .eq("owner_id", authData.user.id)
-                .single()
-
-            if (orgError) {
-                console.error("Could not find organisation", orgError)
-                return
-            }
-
             // TODO: Create the venue before the team so it can be used for the venue ID
 
             // Create record in teams table
@@ -49,7 +29,7 @@ const CreateTeamForm = ({ leagueId }: { leagueId: string}) => {
             const { data: team, error: insertError } = await supabase
                 .from("teams")
                 .insert({
-                  organisation_id: organisation.id,
+                  organisation_id: organisationId,
                   league_id: leagueId,   // from props, not league.id
                   name: name.trim(),
                   home_venue_id: null
