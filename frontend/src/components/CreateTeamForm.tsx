@@ -106,7 +106,7 @@ const CreateTeamForm = ({ leagueId, organisationId }: { leagueId: string; organi
             </FieldDescription>
           </Field>
 
-          <Field>
+          <Field orientation="horizontal" className="items-center justify-between">
             <FieldLabel htmlFor="has-venue">This team has a home venue</FieldLabel>
             <Switch id="has-venue" checked={hasVenue} onCheckedChange={setHasVenue} />
           </Field>
