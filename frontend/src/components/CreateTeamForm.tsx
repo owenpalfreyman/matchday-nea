@@ -4,36 +4,73 @@ import { Field, FieldDescription, FieldGroup, FieldLabel, FieldLegend, FieldSet 
 import { Input } from './ui/input'
 import { Button } from './ui/button'
 import { supabase } from '@/lib/supabase'
+import { Switch } from './ui/switch'
 
 const CreateTeamForm = ({ leagueId, organisationId }: { leagueId: string; organisationId: string }) => {
     // State for field input and loading
     const [name, setName] = useState("")
     const [loading, setLoading] = useState(false)
+    const [venueName, setVenueName] = useState("")
+    const [hasVenue, setHasVenue] = useState(false)
 
     async function createTeam() {
-        if (!name.trim()) { // Returns true only when empty or only whitespace
+        const trimmedName = name.trim()
+        const trimmedVenueName = venueName.trim()
+
+        if (!trimmedName) {
             alert("Please enter a team name")
             return
-        } else if (name.length < 3 || name.length > 41) {
-          alert("Please enter a name at least 4 characters")
-          return
+        }
+        if (trimmedName.length < 3 || trimmedName.length > 41) {
+            alert("Please enter a name between 3 and 41 characters")
+            return
+        }
+
+        if (hasVenue) {
+            if (!trimmedVenueName) {
+                alert("Please enter a venue name")
+                return
+            }
+            if (trimmedVenueName.length < 3 || trimmedVenueName.length > 41) {
+                alert("Please enter a venue name between 3 and 41 characters")
+                return
+            }
         }
 
         setLoading(true)
 
         try {
-            // TODO: Create the venue before the team so it can be used for the venue ID
+          // Set to null initially - can be changed
+          let venueId: string | null = null
 
-            // Create record in teams table
-            // TODO: Properly add the venue ID
-            const { data: team, error: insertError } = await supabase
-                .from("teams")
-                .insert({
-                  organisation_id: organisationId,
-                  league_id: leagueId,   // from props, not league.id
-                  name: name.trim(),
-                  home_venue_id: null
-                })
+          if (hasVenue) {
+              const { data: venue, error: venueError } = await supabase
+                  .from("venues")
+                  .insert({
+                    name: trimmedVenueName,
+                    organisation_id: organisationId
+                  })
+                  .select("id")
+                  .single()
+
+              // Error checks
+              if (venueError || !venue?.id) {
+                  console.error("Could not create venue", venueError)
+                  return
+              }
+
+              venueId = venue.id
+          }
+
+          // Create record in teams table
+          const { data: team, error: insertError } = await supabase
+              .from("teams")
+              .insert({
+                organisation_id: organisationId,
+                league_id: leagueId,   // from props, not league.id
+                name: trimmedName,
+                home_venue_id: venueId
+              })
               .select("id") // Returns the ID for later use
               .single()
 
@@ -68,6 +105,22 @@ const CreateTeamForm = ({ leagueId, organisationId }: { leagueId: string; organi
               This is how users will search for the team to join.
             </FieldDescription>
           </Field>
+
+          <Field>
+            <FieldLabel htmlFor="has-venue">This team has a home venue</FieldLabel>
+            <Switch id="has-venue" checked={hasVenue} onCheckedChange={setHasVenue} />
+          </Field>
+
+          {hasVenue && (
+            <Field>
+              <FieldLabel htmlFor="venue-name">Venue Name</FieldLabel>
+              <Input id="venue-name" autoComplete="off" placeholder="Venue" value={venueName} onChange={(e) => setVenueName(e.target.value)} />
+              <FieldDescription>
+                This is the name of the venue where the team plays.
+              </FieldDescription>
+            </Field>
+          )}
+
         </FieldGroup>
       </FieldSet>
 
