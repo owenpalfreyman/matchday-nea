@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card'
 import { supabase } from '@/lib/supabase'
+import { Button } from './ui/button'
 
 // Define Types
 type League = {
@@ -38,7 +39,7 @@ async function getLeagues(): Promise<League[]> {
     const { data: leagues, error: leaguesError } = await supabase
         .from("leagues")
         .select("*")
-        .eq("organisation_id", orgMemberData.organisation_id)
+        .eq("organisation_id", orgMemberData?.organisation_id)
 
     if (leaguesError) {
         console.warn("No leagues found for organisation:", leaguesError)
@@ -57,7 +58,7 @@ const YourLeagues = () => {
     }, [])
 
   return (
-    <Card size="sm" className="w-full max-w-md p-6">
+    <Card size="sm" className="w-full max-w-lg p-6">
         <CardHeader>
             <CardTitle>Your Leagues</CardTitle>
             <CardDescription>Your leagues in your organisation.</CardDescription>
@@ -71,6 +72,7 @@ const YourLeagues = () => {
                             <span className="shrink-0 text-xs text-muted-foreground">
                                 {league.result_format ?? (league.is_team_based ? "Team league" : "Player league")}
                             </span>
+                            <Button>View League</Button>
                         </div>
                     ))}
                 </div>
