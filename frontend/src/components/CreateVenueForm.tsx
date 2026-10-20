@@ -7,6 +7,9 @@ import { supabase } from '@/lib/supabase'
 import getOrganisationId from '@/lib/get-current-organisation-id'
 import { Button } from './ui/button'
 
+// TODO: Fix the select error giving the ID
+// TODO: Make the form have the list update.
+
 const CreateVenueForm = () => {
     const [venueName, setVenueName] = useState("")
     const [leagues, setLeagues] = useState<{ id: string; name: string }[]>([])
