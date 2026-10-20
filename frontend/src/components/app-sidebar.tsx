@@ -14,7 +14,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { Settings2Icon, LifeBuoyIcon, SendIcon, FrameIcon, PieChartIcon, MapIcon, TerminalIcon } from "lucide-react"
+import { Settings2Icon, LifeBuoyIcon, SendIcon, FrameIcon, PieChartIcon, MapIcon, TerminalIcon, Building2Icon } from "lucide-react"
 import { Link } from "react-router-dom"
 
 const data = {
@@ -57,6 +57,13 @@ const data = {
         <PieChartIcon
         />
       ),
+    },
+    {
+      name: "Venues",
+      url: "/dashboard/venues",
+      icon: (
+        <Building2Icon />
+      )
     },
     {
       name: "Fixtures",
