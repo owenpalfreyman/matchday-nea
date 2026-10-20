@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import getOrganisationId from '../lib/get-current-organisation-id'
 import { supabase } from '@/lib/supabase'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table'
+import { Button } from './ui/button'
+import { Link } from 'react-router-dom'
 
 const VenueList = () => {
   // Set useStates
   const [organisationId, setOrganisationId] = useState<string | null>(null)
+  const [venues, setVenues] = useState<{ id: string; name: string }[]>([])
 
   useEffect(() => {
     let mounted = true
@@ -17,15 +21,16 @@ const VenueList = () => {
       const currentOrganisationId = organisation.organisationId
 
       if (!mounted) return
-
       // Set org ID
       setOrganisationId(currentOrganisationId)
 
       // Select the venues with the matching organisation ID
       const { data: venues, error: venuesError } = await supabase
         .from("venues")
-        .select("*")
+        .select("id, name")
         .eq("organisation_id", currentOrganisationId)
+
+      if (!mounted) return
 
         // Error handling
       if (venuesError) {
@@ -33,12 +38,9 @@ const VenueList = () => {
         return
       }
 
-      
-      if (mounted) {
-        console.log(venues)
-      }
+      setVenues(venues ?? [])
     }
-
+    
     loadVenues()
 
     return () => {
@@ -47,7 +49,42 @@ const VenueList = () => {
   }, [])
 
   return (
-    <div>{organisationId}</div>
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-semibold">Venues</h1>
+        {/* TODO: Add venue button and link */}
+      </div>
+
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Name</TableHead>
+            <TableHead className="text-right">Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {venues.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={2} className="text-center text-muted-foreground">
+                No venues yet.
+              </TableCell>
+            </TableRow>
+          ) : (
+            venues.map((venue) => (
+              
+              <TableRow key={venue.id}>
+                <TableCell>{venue.name}</TableCell>
+                <TableCell className="text-right">
+                  <Button variant="outline" size="sm">
+                    <Link to={`/venues/${venue.id}`}>Manage</Link>
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))
+          )}
+        </TableBody>
+      </Table>
+    </div>
   )
 }
 
