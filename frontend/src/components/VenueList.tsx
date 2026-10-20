@@ -5,10 +5,17 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 import { Button } from './ui/button'
 import { Link } from 'react-router-dom'
 
+// Shape of a venue row once the league has been worked out
+type Venue = {
+  id: string
+  name: string
+  league: string
+}
+
 const VenueList = () => {
   // Set useStates
   const [organisationId, setOrganisationId] = useState<string | null>(null)
-  const [venues, setVenues] = useState<{ id: string; name: string }[]>([])
+  const [venues, setVenues] = useState<Venue[]>([])
 
   useEffect(() => {
     let mounted = true
@@ -25,22 +32,37 @@ const VenueList = () => {
       setOrganisationId(currentOrganisationId)
 
       // Select the venues with the matching organisation ID
-      const { data: venues, error: venuesError } = await supabase
+      // Also pulls in the league of any team using the venue as its home venue
+      const { data, error: venuesError } = await supabase
         .from("venues")
-        .select("id, name")
+        .select("id, name, teams(leagues(name))")
         .eq("organisation_id", currentOrganisationId)
+        .order("name", { ascending: true })
 
       if (!mounted) return
 
-        // Error handling
+      // Error handling
       if (venuesError) {
         console.error("Error fetching venues.", venuesError)
         return
       }
 
-      setVenues(venues ?? [])
+      // Turn each venue's team into a single League string or global if it has no home teams
+      const formatted: Venue[] = (data ?? []).map((venue: any) => {
+        const leagueNames: string[] = (venue.teams ?? [])
+          .map((team: any) => team.leagues?.name)
+          .filter(Boolean)
+
+        return {
+          id: venue.id,
+          name: venue.name,
+          league: leagueNames[0] ?? "All Leagues",
+        }
+      })
+
+      setVenues(formatted)
     }
-    
+
     loadVenues()
 
     return () => {
@@ -59,21 +81,23 @@ const VenueList = () => {
         <TableHeader>
           <TableRow>
             <TableHead>Name</TableHead>
+            <TableHead>League</TableHead>
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {venues.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={2} className="text-center text-muted-foreground">
+              <TableCell colSpan={3} className="text-center text-muted-foreground">
                 No venues yet.
               </TableCell>
             </TableRow>
           ) : (
             venues.map((venue) => (
-              
+
               <TableRow key={venue.id}>
                 <TableCell>{venue.name}</TableCell>
+                <TableCell>{venue.league}</TableCell>
                 <TableCell className="text-right">
                   <Button variant="outline" size="sm">
                     <Link to={`/venues/${venue.id}`}>Manage</Link>
