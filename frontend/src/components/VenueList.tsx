@@ -4,6 +4,7 @@ import { supabase } from '@/lib/supabase'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table'
 import { Button } from './ui/button'
 import { Link } from 'react-router-dom'
+import { Plus } from 'lucide-react'
 
 // Shape of a venue row once the league has been worked out
 type Venue = {
@@ -74,7 +75,6 @@ const VenueList = () => {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">Venues</h1>
-        {/* TODO: Add venue button and link */}
       </div>
 
       <Table>
@@ -108,6 +108,13 @@ const VenueList = () => {
           )}
         </TableBody>
       </Table>
+
+      <div className="flex justify-end">
+        <Button>
+          <Plus />
+          Add Venue
+        </Button>
+      </div>
     </div>
   )
 }
