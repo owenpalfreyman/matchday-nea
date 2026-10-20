@@ -108,13 +108,6 @@ const VenueList = () => {
           )}
         </TableBody>
       </Table>
-
-      <div className="flex justify-end">
-        <Button>
-          <Plus />
-          Add Venue
-        </Button>
-      </div>
     </div>
   )
 }
