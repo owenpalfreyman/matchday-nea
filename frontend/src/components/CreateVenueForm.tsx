@@ -7,7 +7,6 @@ import { supabase } from '@/lib/supabase'
 import getOrganisationId from '@/lib/get-current-organisation-id'
 import { Button } from './ui/button'
 
-// TODO: Fix the select error giving the ID
 // TODO: Make the form have the list update.
 
 const CreateVenueForm = () => {
@@ -92,7 +91,9 @@ const CreateVenueForm = () => {
                             onValueChange={(value) => setSelectedLeague(value ?? "")}
                         >
                             <SelectTrigger id="league" className="w-full">
-                                <SelectValue placeholder="Select a league" />
+                                <SelectValue placeholder="Select a league">
+                                    {(value) => leagues.find((league) => league.id === value)?.name ?? "Select a league"}
+                                </SelectValue>
                             </SelectTrigger>
                             <SelectContent>
                                 {leagues.map((league) => (
