@@ -36,7 +36,7 @@ const VenueList = () => {
       // Also pulls in the league of any team using the venue as its home venue
       const { data, error: venuesError } = await supabase
         .from("venues")
-        .select("id, name, teams(leagues(name))")
+        .select("id, name, leagues(name)")
         .eq("organisation_id", currentOrganisationId)
         .order("name", { ascending: true })
 
@@ -49,17 +49,11 @@ const VenueList = () => {
       }
 
       // Turn each venue's team into a single League string or global if it has no home teams
-      const formatted: Venue[] = (data ?? []).map((venue: any) => {
-        const leagueNames: string[] = (venue.teams ?? [])
-          .map((team: any) => team.leagues?.name)
-          .filter(Boolean)
-
-        return {
-          id: venue.id,
-          name: venue.name,
-          league: leagueNames[0] ?? "All Leagues",
-        }
-      })
+      const formatted: Venue[] = (data ?? []).map((venue: any) => ({
+        id: venue.id,
+        name: venue.name,
+        league: venue.leagues?.name ?? "All Leagues",
+      }))
 
       setVenues(formatted)
     }
