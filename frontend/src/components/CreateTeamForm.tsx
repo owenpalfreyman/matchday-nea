@@ -48,7 +48,8 @@ const CreateTeamForm = ({ leagueId, organisationId }: { leagueId: string; organi
                   .from("venues")
                   .insert({
                     name: trimmedVenueName,
-                    organisation_id: organisationId
+                    organisation_id: organisationId,
+                    league_id: leagueId
                   })
                   .select("id")
                   .single()
