@@ -10,17 +10,21 @@ const Venue = () => {
     const [venue, setVenue] = useState(null)
 
     useEffect(() => {
+        // Get the venue data (if the user is from the correct organisation)
         async function fetchVenue() {
             if (!venueId) {
+                console.warn("No venue")
                 return
             }
 
+            // Database query for the venue with a matching ID as the parameter
             const { data: venue, error: venueError } = await supabase
                 .from('venues')
                 .select('*')
                 .eq('id', venueId)
-                .single()
+                .maybeSingle()
 
+            // Error handling
             if (venueError) {
                 console.error('Error fetching venue:', venueError)
                 return
@@ -28,10 +32,22 @@ const Venue = () => {
 
             setVenue(venue)
 
+            // Get current org ID from user data
             const organisation = await getCurrentOrganisationId()
 
+            // For debugging purposes
+            console.log("The user's organisation: ", organisation.organisationId)
+            console.log("The venue's organisation: ", venue.organisation_id)
+
+            // Check to see if the user's org ID and the venue's org ID match
             if (organisation.organisationId !== venue.organisation_id) {
-                navigate('/dashboard/venues')
+                // If not, user has to be navigated back to the /venues
+                navigate('/dashboard/venues', { replace: true })
+            }
+
+            // Catches if the venue is null so should be redirected
+            if (!venue || venue === null) {
+                navigate("dashboard/venues", {replace: true})
             }
         }
 
@@ -40,7 +56,7 @@ const Venue = () => {
 
     return (
         <Card>
-            <CardTitle>{venue.name}</CardTitle>
+            <CardTitle>{venue?.name}</CardTitle>
         </Card>
     )
 }
