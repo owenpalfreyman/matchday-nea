@@ -3,10 +3,39 @@ import { Card } from './ui/card'
 import { FieldLegend, FieldSet, FieldDescription, FieldGroup, FieldLabel, Field } from './ui/field'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from './ui/select'
 import { Input } from './ui/input'
+import { Button } from './ui/button'
+import { supabase } from '@/lib/supabase'
+import { useParams } from 'react-router-dom'
 
 const AddVenueAvailability = () => {
   const daysOfTheWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
   const [selectedDay, setSelectedDay] = useState<string | null>(null)
+  const [startTime, setStartTime] = useState(null)
+  const [endTime, setEndTime] = useState(null)
+
+  async function addVenueAvailability() {
+    // Get the venue ID
+    const { id } = useParams();
+
+    // Convert the day of the week into an integer for the day
+    const day_of_the_week = selectedDay
+      ? daysOfTheWeek.indexOf(selectedDay) + 1 // Find selected day's position in day of week and add 1
+      : null
+
+    // Data Insertion
+    const { data: addAvailabilityData, error: addAvailabilityError } = await supabase
+      .from("venue_availability")
+      .insert({
+        venue_id: id,
+        day_of_week: day_of_the_week,
+        start_time: startTime,
+        end_time: endTime,
+      })
+
+    if (addAvailabilityError) {
+      console.log("Error adding availability.", addAvailabilityError)
+    }
+  }
 
   return (
     <Card className="w-full max-w-md p-6 shadow-sm">
@@ -42,6 +71,8 @@ const AddVenueAvailability = () => {
           <Field>
             <FieldLabel htmlFor="start-time">Start Time</FieldLabel>
             <Input
+              value={startTime}
+              onChange={(value) => setStartTime(value)}
               type="time"
               id="start-time"
               step="60"
@@ -52,6 +83,8 @@ const AddVenueAvailability = () => {
           <Field>
             <FieldLabel htmlFor="end-time">End Time</FieldLabel>
             <Input
+              value={endTime}
+              onChange={(value) => setEndTime(value)}
               type="time"
               id="end-time"
               step="60"
@@ -60,6 +93,7 @@ const AddVenueAvailability = () => {
             />
           </Field>
         </FieldGroup>
+        <Button type="button" onClick={addVenueAvailability}>Add Availability</Button>
       </FieldSet>
     </Card>
   )
