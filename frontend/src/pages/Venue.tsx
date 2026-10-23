@@ -56,12 +56,12 @@ const Venue = () => {
     }, [venueId, navigate])
 
     return (
-        <>
-            <Card>
-                <CardTitle>{venue?.name}</CardTitle>
+        <main className="mx-auto flex w-full max-w-3xl flex-col gap-6">
+            <Card className="p-6">
+                <CardTitle className="text-2xl">{venue?.name ?? 'Venue'}</CardTitle>
             </Card>
             <AddVenueAvailability />
-        </>
+        </main>
     )
 }
 
