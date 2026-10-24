@@ -12,21 +12,24 @@ const AddVenueAvailability = () => {
   const [selectedDay, setSelectedDay] = useState<string | null>(null)
   const [startTime, setStartTime] = useState(null)
   const [endTime, setEndTime] = useState(null)
+  // Get the venue ID
+  const { venueId } = useParams();
+
 
   async function addVenueAvailability() {
-    // Get the venue ID
-    const { id } = useParams();
-
     // Convert the day of the week into an integer for the day
     const day_of_the_week = selectedDay
       ? daysOfTheWeek.indexOf(selectedDay) + 1 // Find selected day's position in day of week and add 1
       : null
 
+    // For debugging
+    console.log({ venueId, day_of_the_week, startTime, endTime})
+
     // Data Insertion
     const { data: addAvailabilityData, error: addAvailabilityError } = await supabase
       .from("venue_availability")
       .insert({
-        venue_id: id,
+        venue_id: venueId,
         day_of_week: day_of_the_week,
         start_time: startTime,
         end_time: endTime,
@@ -72,11 +75,10 @@ const AddVenueAvailability = () => {
             <FieldLabel htmlFor="start-time">Start Time</FieldLabel>
             <Input
               value={startTime}
-              onChange={(value) => setStartTime(value)}
+              onChange={(event) => setStartTime(event.target.value)}
               type="time"
               id="start-time"
               step="60"
-              defaultValue="00:00"
               className="w-full appearance-none bg-background [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
             />
           </Field>
@@ -84,11 +86,10 @@ const AddVenueAvailability = () => {
             <FieldLabel htmlFor="end-time">End Time</FieldLabel>
             <Input
               value={endTime}
-              onChange={(value) => setEndTime(value)}
+              onChange={(event) => setEndTime(event.target.value)}
               type="time"
               id="end-time"
               step="60"
-              defaultValue="00:00"
               className="w-full appearance-none bg-background [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
             />
           </Field>
