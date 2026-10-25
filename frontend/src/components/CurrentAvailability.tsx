@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase'
-import { Card, CardTitle } from './ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from './ui/table'
 import { useEffect, useState } from 'react'
 import { Button } from './ui/button'
@@ -52,29 +52,35 @@ const CurrentAvailability = ({ venueId }: CurrentAvailabilityProps) => {
     }, [venueId])
 
   return (
-    <Card>
-        <CardTitle>Current Venue Availability</CardTitle>
-        <Table>
-            <TableCaption>Venue's Availability Slots</TableCaption>
+    <Card className="w-full">
+        <CardHeader className="pb-3">
+            <CardTitle className="text-lg">Current Venue Availability</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableCaption className="sr-only">Venue's Availability Slots</TableCaption>
             <TableHeader>
                 <TableRow>
                     <TableHead>Day</TableHead>
                     <TableHead>Start Time</TableHead>
                     <TableHead>End Time</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
             </TableHeader>
             <TableBody>
                 {availabilityWindows.length === 0 ? (
                     <TableRow>
-                        <TableCell colSpan={3}>No availability slots added yet.</TableCell>
+                        <TableCell colSpan={4} className="py-6 text-center text-muted-foreground">
+                            No availability slots added yet.
+                        </TableCell>
                     </TableRow>
                 ) : (
                     availabilityWindows.map((slot) => (
                         <TableRow key={slot.id}>
-                            <TableCell>{slot.day_of_week}</TableCell>
+                            <TableCell className="font-medium">{slot.day_of_week}</TableCell>
                             <TableCell>{slot.start_time}</TableCell>
                             <TableCell>{slot.end_time}</TableCell>
-                            <TableCell>
+                            <TableCell className="text-right">
                                 <Button onClick={() => deleteWindow(slot.id)}>
                                     <TrashIcon />
                                 </Button>
@@ -83,7 +89,8 @@ const CurrentAvailability = ({ venueId }: CurrentAvailabilityProps) => {
                     ))
                 )}
             </TableBody>
-        </Table>
+          </Table>
+        </CardContent>
     </Card>
   )
 }
