@@ -1,4 +1,5 @@
 import AddVenueAvailability from '@/components/AddVenueAvailability'
+import CurrentAvailability from '@/components/CurrentAvailability'
 import { Card, CardTitle } from '@/components/ui/card'
 import getCurrentOrganisationId from '@/lib/get-current-organisation-id'
 import { supabase } from '@/lib/supabase'
@@ -57,6 +58,7 @@ const Venue = () => {
                 <CardTitle className="text-2xl">{venue?.name ?? 'Venue'}</CardTitle>
             </Card>
             <AddVenueAvailability />
+            <CurrentAvailability venueId={venueId} />
         </main>
     )
 }
