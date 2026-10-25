@@ -2,6 +2,8 @@ import { supabase } from '@/lib/supabase'
 import { Card, CardTitle } from './ui/card'
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from './ui/table'
 import { useEffect, useState } from 'react'
+import { Button } from './ui/button'
+import { TrashIcon } from 'lucide-react'
 
 type CurrentAvailabilityProps = {
     venueId: string
@@ -33,6 +35,18 @@ const CurrentAvailability = ({ venueId }: CurrentAvailabilityProps) => {
         setAvailabilityWindows(data ?? [])
     }
 
+    async function deleteWindow(id: string) { // ID from the Table Slot
+        const { error } = await supabase
+            .from("venue_availability")
+            .delete()
+            .eq("id", id)
+
+        if (error) {
+            console.log("Error deleting the availability window.", error)
+            return // leave the table as it is
+        }
+    }
+
     useEffect(() => {
         loadAvailability()
     }, [venueId])
@@ -60,6 +74,11 @@ const CurrentAvailability = ({ venueId }: CurrentAvailabilityProps) => {
                             <TableCell>{slot.day_of_week}</TableCell>
                             <TableCell>{slot.start_time}</TableCell>
                             <TableCell>{slot.end_time}</TableCell>
+                            <TableCell>
+                                <Button onClick={() => deleteWindow(slot.id)}>
+                                    <TrashIcon />
+                                </Button>
+                            </TableCell>
                         </TableRow>
                     ))
                 )}
