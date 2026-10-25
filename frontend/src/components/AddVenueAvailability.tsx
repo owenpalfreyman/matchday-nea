@@ -6,12 +6,13 @@ import { Input } from './ui/input'
 import { Button } from './ui/button'
 import { supabase } from '@/lib/supabase'
 import { useParams } from 'react-router-dom'
+import findOverlap from '@/lib/find-overlap'
 
 const AddVenueAvailability = () => {
   const daysOfTheWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
   const [selectedDay, setSelectedDay] = useState<string | null>(null)
-  const [startTime, setStartTime] = useState(null)
-  const [endTime, setEndTime] = useState(null)
+  const [startTime, setStartTime] = useState("")
+  const [endTime, setEndTime] = useState("")
   // Get the venue ID
   const { venueId } = useParams();
 
@@ -19,13 +20,43 @@ const AddVenueAvailability = () => {
   async function addVenueAvailability() {
     // Convert the day of the week into an integer for the day
     const day_of_the_week = selectedDay
-      ? daysOfTheWeek.indexOf(selectedDay) + 1 // Find selected day's position in day of week and add 1
+      ? daysOfTheWeek.indexOf(selectedDay) + 1
       : null
+
+    // 1. End must be after the start
+    if (!startTime || !endTime || endTime <= startTime) {
+      alert("The end time must be after the start time.")
+      return
+    }
+
+    if (day_of_the_week === null) {
+      alert("Please select a day of the week.")
+      return
+    }
+
+    // 2. Fetch existing availability windows for the day
+    const { data: existing, error: fetchError } = await supabase
+      .from("venue_availability")
+      .select("*")
+      .eq("venue_id", venueId)
+      .eq("day_of_week", day_of_the_week);
+    
+    if (fetchError) {
+      console.error("Error finding existing slots - availability cannot be added without a clash check.", fetchError)
+      alert("Existing availability could not be checked. Please try again.")
+      return
+    }
+
+    // 3. Check for clash between new times and old times
+    if (findOverlap(startTime, endTime, existing)) {
+      alert("This availability window overlaps with an existing window.")
+      return
+    }
 
     // For debugging
     console.log({ venueId, day_of_the_week, startTime, endTime})
 
-    // Data Insertion
+    // 4. Data Insertion
     const { data: addAvailabilityData, error: addAvailabilityError } = await supabase
       .from("venue_availability")
       .insert({
