@@ -53,9 +53,6 @@ const AddVenueAvailability = () => {
       return
     }
 
-    // For debugging
-    console.log({ venueId, day_of_the_week, startTime, endTime})
-
     // 4. Data Insertion
     const { data: addAvailabilityData, error: addAvailabilityError } = await supabase
       .from("venue_availability")
