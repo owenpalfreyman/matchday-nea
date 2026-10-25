@@ -36,10 +36,6 @@ const Venue = () => {
             // Get current org ID from user data
             const organisation = await getCurrentOrganisationId()
 
-            // For debugging purposes
-            console.log("The user's organisation: ", organisation.organisationId)
-            console.log("The venue's organisation: ", venue.organisation_id)
-
             // Check to see if the user's org ID and the venue's org ID match
             if (organisation.organisationId !== venue.organisation_id) {
                 // If not, user has to be navigated back to the /venues
