@@ -94,7 +94,7 @@ const VenueList = () => {
                 <TableCell>{venue.league}</TableCell>
                 <TableCell className="text-right">
                   <Button variant="outline" size="sm">
-                    <Link to={`/venues/${venue.id}`}>Manage</Link>
+                    <Link to={`/dashboard/venues/${venue.id}`}>Manage</Link>
                   </Button>
                 </TableCell>
               </TableRow>

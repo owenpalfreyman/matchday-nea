@@ -12,6 +12,7 @@ import { ThemeProvider } from "./components/ThemeProvider.tsx"
 import Leagues from "./pages/Leagues.tsx"
 import League from "./pages/League.tsx"
 import Venues from "./pages/Venues.tsx"
+import Venue from "./pages/Venue.tsx"
 
 const router = createBrowserRouter([
   { path: "/", element: <App /> },
@@ -26,6 +27,7 @@ const router = createBrowserRouter([
         { path: "leagues", element: <Leagues /> },
         { path: "leagues/:leagueId", element: <League /> },
         { path: "venues", element: <Venues /> },
+        { path: "venues/:venueId", element: <Venue /> },
       ],
     }]}
 ])
