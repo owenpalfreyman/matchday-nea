@@ -17,7 +17,12 @@ const AddVenueBlackoutDate = ({ venueId }: CurrentAvailabilityProps) => {
     const [description, setDescription] = useState("")
     
     const handleSubmit = async () => {
+        // 1. Handle the dateRange, and convert it to YYYY/MM/DD for Supabase
+        let startDate = dateRange?.from?.toLocaleDateString("sv-SE");
+        let endDate = dateRange?.to?.toLocaleDateString("sv-SE")
 
+        // 2. Call the function to upload the data to the table
+        addVenueBlackout(startDate, endDate)
     }
 
     async function addVenueBlackout(startDate: string, endDate: string) {
@@ -42,14 +47,14 @@ const AddVenueBlackoutDate = ({ venueId }: CurrentAvailabilityProps) => {
         const { data: addVenueBlackoutData, error: addVenueBlackoutError} = await supabase
             .from("venue_blackouts")
             .insert({
-                venueId: venueId,
+                venue_id: venueId,
                 start_date: startDate,
                 end_date: endDate,
                 description: description,
             })
 
         if (addVenueBlackoutError) {
-            console.log("Error adding blackout for this venue.", addVenueBlackoutError)
+            console.error("Error adding blackout for this venue.", addVenueBlackoutError)
         }
 
     }
