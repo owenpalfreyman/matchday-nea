@@ -1,4 +1,5 @@
 import AddVenueAvailability from '@/components/AddVenueAvailability'
+import AddVenueBlackoutDate from '@/components/AddVenueBlackoutDate'
 import CurrentAvailability from '@/components/CurrentAvailability'
 import { Card, CardTitle } from '@/components/ui/card'
 import getCurrentOrganisationId from '@/lib/get-current-organisation-id'
@@ -59,6 +60,7 @@ const Venue = () => {
             </Card>
             <AddVenueAvailability />
             <CurrentAvailability venueId={venueId} />
+            <AddVenueBlackoutDate venueId={venueId} />
         </main>
     )
 }
