@@ -22,28 +22,11 @@ const AddVenueBlackoutDate = ({ venueId }: CurrentAvailabilityProps) => {
         let endDate = dateRange?.to?.toLocaleDateString("sv-SE")
 
         // 2. Call the function to upload the data to the table
-        addVenueBlackout(startDate, endDate)
+        await addVenueBlackout(startDate, endDate)
     }
 
     async function addVenueBlackout(startDate: string, endDate: string) {
-        // 1. Fetch existing blackout dates for this venue
-        const { data: existing, error: fetchError } = await supabase
-            .from("venue_blackouts")
-            .select("*")
-            .eq("venue_id", venueId)
-
-        if (fetchError) {
-            console.error("Error fetching this venue's blackout dates.", fetchError)
-            return
-        }
-
-        // 2. Check to see if there is already a blackout on this day
-        if (hasBlackoutOverlap(startDate, endDate, existing)) {
-            alert("This venue already has a blackout overlapping these dates.")
-            return
-        }
-
-        // 3. Data Insertion
+        // Data Insertion
         const { data: addVenueBlackoutData, error: addVenueBlackoutError} = await supabase
             .from("venue_blackouts")
             .insert({
