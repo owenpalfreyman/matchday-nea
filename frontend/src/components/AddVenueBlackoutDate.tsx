@@ -55,34 +55,35 @@ const AddVenueBlackoutDate = ({ venueId }: CurrentAvailabilityProps) => {
     }
 
     return (
-        <Card>
-            <FieldSet>
-                <FieldLegend>Add Venue Blackout Date</FieldLegend>
+        <Card className="w-full max-w-3xl p-6 shadow-sm">
+            <FieldSet className="gap-6">
+                <FieldLegend className="text-lg">Add Venue Blackout Date</FieldLegend>
                 <FieldDescription>
                     Add a window of no availability for this date.
                 </FieldDescription>
-                <FieldGroup>
+                <FieldGroup className="gap-4">
                     <Field>
                         {/* User selects the start and end dates for the blackout */}
-                        <FieldLabel>Dates Window</FieldLabel>
+                        <FieldLabel className="text-sm font-medium">Dates Window</FieldLabel>
                         <Calendar
                             mode="range"
                             selected={dateRange}
                             onSelect={setDateRange}
                             numberOfMonths={2}
-                            className="rounded-lg border"
+                            className="w-full max-w-full rounded-lg"
                         />
                     </Field>
                     <Field>
-                        <FieldLabel>Description</FieldLabel>
+                        <FieldLabel htmlFor="blackout-description">Description</FieldLabel>
                         <Input
+                            id="blackout-description"
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                             placeholder="e.g. Pitch resurfacing"
                         />
                     </Field>
                     <Field>
-                        <Button onClick={handleSubmit} disabled={!dateRange?.from}>
+                        <Button className="w-full sm:w-auto" onClick={handleSubmit} disabled={!dateRange?.from}>
                             Add Blackout
                         </Button>
                     </Field>
