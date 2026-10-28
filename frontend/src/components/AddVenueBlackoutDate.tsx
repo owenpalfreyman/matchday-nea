@@ -1,6 +1,5 @@
 import { supabase } from '@/lib/supabase'
 import { useState } from 'react'
-import hasBlackoutOverlap from '@/lib/find-venue-blackout-overlap'
 import { Field, FieldDescription, FieldGroup, FieldLabel, FieldLegend, FieldSet } from './ui/field'
 import { Card } from './ui/card'
 import { Calendar } from './ui/calendar'
