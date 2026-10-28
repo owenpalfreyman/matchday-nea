@@ -1,7 +1,7 @@
 import { supabase } from '@/lib/supabase'
 import { useEffect, useState } from 'react'
-import { Card, CardTitle } from './ui/card'
-import { Table, TableBody, TableCell, TableHead, TableRow } from './ui/table'
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from './ui/table'
 
 type CurrentAvailabilityProps = {
     venueId: string
@@ -11,7 +11,7 @@ type BlackoutWindow = {
     id: string
     venue_id: string
     start_date: string
-    endDate: string
+    end_date: string
     description: string
 }
 
@@ -38,35 +38,42 @@ const CurrentBlackouts = ({ venueId }: CurrentAvailabilityProps) => {
     }, [venueId])
 
     return (
-        <Card>
-            <CardTitle>This Venue's Blackout Windows</CardTitle>
-            <Table>
-                <TableHead>
+        <Card className="w-full">
+            <CardHeader className="pb-3">
+                <CardTitle className="text-lg">This Venue's Blackout Windows</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableCaption className="sr-only">Venue's Blackout Windows</TableCaption>
+                <TableHeader>
                     <TableRow>
                         <TableHead>Start Date</TableHead>
                         <TableHead>End Date</TableHead>
                         <TableHead>Description</TableHead>
                     </TableRow>
-                </TableHead>
+                </TableHeader>
 
                 <TableBody>
                     {/* If there are currently no blackout windows */}
                     {blackoutWindows.length === 0 ? (
                         <TableRow>
-                            <TableCell>No Availability added yet</TableCell>
+                            <TableCell colSpan={3} className="py-6 text-center text-muted-foreground">
+                                No blackout windows added yet.
+                            </TableCell>
                         </TableRow>
                     ) : (
                         blackoutWindows.map((slot) => (
                             <TableRow key={slot.id}>
                                 <TableCell>{slot.start_date}</TableCell>
-                                <TableCell>{slot.endDate}</TableCell>
+                                <TableCell>{slot.end_date}</TableCell>
                                 <TableCell>{slot.description}</TableCell>
                                 {/* TODO: Add delete button */}
                             </TableRow>
                         ))
                     )}
                 </TableBody>
-            </Table>
+              </Table>
+            </CardContent>
         </Card>
     )
 }
