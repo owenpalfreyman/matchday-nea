@@ -46,6 +46,9 @@ const CurrentBlackouts = ({ venueId }: CurrentAvailabilityProps) => {
             console.error("Error deleting a window of unavailability")
             return
         }
+
+        // Remove the deleted row from local state so the table re-renders
+        setBlackoutWindows((current) => current.filter((slot) => slot.id !== id))
     }
 
     useEffect(() => {
@@ -73,7 +76,7 @@ const CurrentBlackouts = ({ venueId }: CurrentAvailabilityProps) => {
                     {/* If there are currently no blackout windows */}
                     {blackoutWindows.length === 0 ? (
                         <TableRow>
-                            <TableCell colSpan={3} className="py-6 text-center text-muted-foreground">
+                            <TableCell colSpan={4} className="py-6 text-center text-muted-foreground">
                                 No blackout windows added yet.
                             </TableCell>
                         </TableRow>
