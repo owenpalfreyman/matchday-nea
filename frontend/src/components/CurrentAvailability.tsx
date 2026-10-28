@@ -45,6 +45,9 @@ const CurrentAvailability = ({ venueId }: CurrentAvailabilityProps) => {
             console.log("Error deleting the availability window.", error)
             return // leave the table as it is
         }
+
+        // Remove the deleted row from local state so the table re-renders
+        setAvailabilityWindows((current) => current.filter((slot) => slot.id !== id))
     }
 
     useEffect(() => {
