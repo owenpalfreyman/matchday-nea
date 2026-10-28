@@ -2,6 +2,8 @@ import { supabase } from '@/lib/supabase'
 import { useEffect, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from './ui/table'
+import { Button } from './ui/button'
+import { TrashIcon } from 'lucide-react'
 
 type CurrentAvailabilityProps = {
     venueId: string
@@ -33,6 +35,19 @@ const CurrentBlackouts = ({ venueId }: CurrentAvailabilityProps) => {
         setBlackoutWindows(data ?? [])
     }
 
+    // Function to delete a blackout window
+    async function deleteBlackouts(id: string) {
+        const { data, error: deleteBlackoutError } = await supabase
+            .from("venue_blackouts")
+            .delete()
+            .eq("id", id)
+
+        if (deleteBlackoutError) {
+            console.error("Error deleting a window of unavailability")
+            return
+        }
+    }
+
     useEffect(() => {
         loadBlackouts()
     }, [venueId])
@@ -50,6 +65,7 @@ const CurrentBlackouts = ({ venueId }: CurrentAvailabilityProps) => {
                         <TableHead>Start Date</TableHead>
                         <TableHead>End Date</TableHead>
                         <TableHead>Description</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                 </TableHeader>
 
@@ -67,7 +83,11 @@ const CurrentBlackouts = ({ venueId }: CurrentAvailabilityProps) => {
                                 <TableCell>{slot.start_date}</TableCell>
                                 <TableCell>{slot.end_date}</TableCell>
                                 <TableCell>{slot.description}</TableCell>
-                                {/* TODO: Add delete button */}
+                                <TableCell className="text-right">
+                                    <Button onClick={() => deleteBlackouts(slot.id)}>
+                                        <TrashIcon />
+                                    </Button>
+                                </TableCell>
                             </TableRow>
                         ))
                     )}
