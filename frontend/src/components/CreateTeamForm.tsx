@@ -92,7 +92,7 @@ const CreateTeamForm = ({ leagueId, organisationId }: { leagueId: string; organi
 
 
   return (
-    <Card className="mx-auto w-full max-w-md p-6">
+    <Card className="w-full max-w-3xl p-6 shadow-sm">
       <FieldSet>
         <FieldLegend>Add Team</FieldLegend>
         <FieldDescription>

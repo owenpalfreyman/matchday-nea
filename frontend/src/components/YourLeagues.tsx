@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card'
 import { supabase } from '@/lib/supabase'
 import { Button } from './ui/button'
+import { Link } from 'react-router-dom'
 
 // Define Types
 type League = {
@@ -72,7 +73,11 @@ const YourLeagues = () => {
                             <span className="shrink-0 text-xs text-muted-foreground">
                                 {league.result_format ?? (league.is_team_based ? "Team league" : "Player league")}
                             </span>
-                            <Button>View League</Button>
+                            <Button>
+                                <Link to={`/dashboard/leagues/${league.id}`}>
+                                    View League
+                                </Link>
+                            </Button>
                         </div>
                     ))}
                 </div>
