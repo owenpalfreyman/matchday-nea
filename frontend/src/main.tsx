@@ -13,10 +13,12 @@ import Leagues from "./pages/Leagues.tsx"
 import League from "./pages/League.tsx"
 import Venues from "./pages/Venues.tsx"
 import Venue from "./pages/Venue.tsx"
+import UsernameLogin from "./pages/EmailLogin.tsx"
 
 const router = createBrowserRouter([
   { path: "/", element: <App /> },
   { path: "/login", element: <Login /> },
+  { path: "/login-secret", element: <UsernameLogin />},
   { element: <ProtectedRoutes />, children: 
     [{ 
       path: "/dashboard",
