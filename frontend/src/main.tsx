@@ -14,6 +14,7 @@ import League from "./pages/League.tsx"
 import Venues from "./pages/Venues.tsx"
 import Venue from "./pages/Venue.tsx"
 import UsernameLogin from "./pages/EmailLogin.tsx"
+import JoinOrg from "./pages/JoinOrg.tsx"
 
 const router = createBrowserRouter([
   { path: "/", element: <App /> },
@@ -30,6 +31,7 @@ const router = createBrowserRouter([
         { path: "leagues/:leagueId", element: <League /> },
         { path: "venues", element: <Venues /> },
         { path: "venues/:venueId", element: <Venue /> },
+        { path: "join/:orgId", element: <JoinOrg /> },
       ],
     }]}
 ])
