@@ -21,7 +21,7 @@ const JoinOrg = () => {
 
             // If there is no organisation, rediret the user back to organisations
             if (!organisation) {
-                navigate('/organisations', { replace: true })
+                navigate('/dashboard/organisations', { replace: true })
                 return
             }
             
