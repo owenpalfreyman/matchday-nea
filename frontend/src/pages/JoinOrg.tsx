@@ -52,9 +52,6 @@ const JoinOrg = () => {
       <CardTitle>Join {organisation?.name}</CardTitle>
       <CardDescription>Want to join for this organisation? You can apply here.</CardDescription>
       <CardContent>
-        <Select>
-
-        </Select>
       </CardContent>
     </Card>
   )
