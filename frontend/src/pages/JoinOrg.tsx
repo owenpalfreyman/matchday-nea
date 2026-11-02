@@ -1,9 +1,12 @@
+import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardTitle } from '@/components/ui/card'
 import { Field } from '@/components/ui/field'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import getLeagueTeams from '@/lib/get-league-teams'
 import getOrganisationData from '@/lib/get-organisation-data'
 import getOrganisationLeagues from '@/lib/get-organisation-leagues'
+import { getUserData, getUserId } from '@/lib/get-user-data'
+import { supabase } from '@/lib/supabase'
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
@@ -23,6 +26,29 @@ const JoinOrg = () => {
     { label: 'Player', value: 'player' },
     { label: 'Coach', value: 'coach' },
   ]
+  
+  // TODO: Prevent user's from sending a request if there is already data
+
+  // Function to send the request to the table
+  async function sendRequest () {
+    // Get the user ID
+    const {data: { user }} = await supabase.auth.getUser()
+
+    const { data: requestData, error: requestError } = await supabase
+      .from("requests")
+      .insert({
+        profile_id: user?.id,
+        role: selectedRole,
+        status: "pending" // Should be pending by default
+      })
+
+    // Error handling
+    if (requestError) {
+      console.error("Error adding request to join.", requestError)
+    } else { // For testing only - to be deleted afterwards
+      console.log(requestData)
+    }
+  }
 
   function handleRoleChange (role: string) {
     // Change the role
@@ -42,7 +68,6 @@ const JoinOrg = () => {
     // Filter the teams based on the selected league
     const options = teams?.flat().filter((team) => String(team.league_id) === league) ?? []
     setTeamsOptions(options)
-    console.log(options)
   }
 
 
@@ -72,10 +97,6 @@ const JoinOrg = () => {
         leagues.map((league) => getLeagueTeams(league.id))
       )
       setTeams(teams)
-
-      console.log("Organisation:", organisation)
-      console.log("Leagues:", leagues)
-      console.log("Teams:", teams)
     }
 
     void getData(orgId)
@@ -149,6 +170,7 @@ const JoinOrg = () => {
               </SelectContent>
             </Select>
 
+            <Button onClick={sendRequest}>Request to Join</Button>
           </Field>
         )}
 
