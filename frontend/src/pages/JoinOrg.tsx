@@ -82,17 +82,17 @@ const JoinOrg = () => {
   }, [navigate, orgId])
 
   return (
-    <Card>
-      <CardTitle>Join {organisation?.name}</CardTitle>
-      <CardDescription>Want to join for this organisation? You can apply here.</CardDescription>
-      <CardContent>
-        <p>Select the role you want to apply for in this organisation.</p>
+    <Card className="w-full max-w-md gap-4 p-6">
+        <CardTitle className="text-xl">Join {organisation?.name}</CardTitle>
+        <CardDescription>Want to join for this organisation? You can apply here.</CardDescription>
+      <CardContent className="flex flex-col gap-4 p-0">
+        <p className="text-sm text-muted-foreground">Select the role you want to apply for in this organisation.</p>
         <Select
           items={roles}
           value={selectedRole}
           onValueChange={handleRoleChange}
         >
-          <SelectTrigger>
+          <SelectTrigger className="w-full">
             <SelectValue placeholder="Select a role" />
           </SelectTrigger>
           <SelectContent>
@@ -108,14 +108,14 @@ const JoinOrg = () => {
 
         {/* Display the teams that the user can apply for if they are not an admin */}
         {selectedRole !== "admin" && selectedRole !== undefined && (
-          <Field>
+          <Field className="gap-4">
             {/* League Selection */}
             <Select
               items={leagues}
               value={selectedLeague}
               onValueChange={handleLeagueChange}
             >
-              <SelectTrigger>
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select a league" />
               </SelectTrigger>
               <SelectContent>
@@ -135,7 +135,7 @@ const JoinOrg = () => {
               value={selectedTeam}
               onValueChange={(team) => setSelectedTeam(team)}
             >
-              <SelectTrigger>
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select a team" />
               </SelectTrigger>
               <SelectContent>
@@ -151,8 +151,6 @@ const JoinOrg = () => {
 
           </Field>
         )}
-
-
 
       </CardContent>
     </Card>
