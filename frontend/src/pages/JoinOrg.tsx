@@ -14,6 +14,7 @@ const JoinOrg = () => {
   const [teamsOptions, setTeamsOptions] = useState(null)
   const [selectedRole, setSelectedRole] = useState<string>(undefined)
   const [selectedLeague, setSelectedLeague] = useState<string>(undefined)
+  const [selectedTeam, setSelectedTeam] = useState<string>(undefined)
   const { orgId } = useParams<{ orgId: string }>()
   const navigate = useNavigate()
 
@@ -34,14 +35,14 @@ const JoinOrg = () => {
   }
 
   function handleLeagueChange (league: string) {
-    // Change the league
+    // Handle the league change and reset the selected team
     setSelectedLeague(league)
+    setSelectedTeam(undefined)
 
-    // Clear the selected team if any
-
-    // Change the options for the teams that the user can pick
-    setTeamsOptions(teams?.flat().filter((team) => team.league === league) ?? [])
-    console.log(teamsOptions)
+    // Filter the teams based on the selected league
+    const options = teams?.flat().filter((team) => String(team.league_id) === league) ?? []
+    setTeamsOptions(options)
+    console.log(options)
   }
 
 
@@ -120,7 +121,7 @@ const JoinOrg = () => {
               <SelectContent>
                 <SelectGroup>
                   {leagues?.map((league) => (
-                    <SelectItem key={league.name} value={league.name}>
+                    <SelectItem key={league.id} value={String(league.id)}>
                       {league.name}
                     </SelectItem>
                   ))}
@@ -131,6 +132,8 @@ const JoinOrg = () => {
             {/* Team Selection */}
             <Select
               items={teamsOptions}
+              value={selectedTeam}
+              onValueChange={(team) => setSelectedTeam(team)}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select a team" />
@@ -138,7 +141,7 @@ const JoinOrg = () => {
               <SelectContent>
                 <SelectGroup>
                   {teamsOptions?.map((team) => (
-                    <SelectItem key={team.id} value={team.id}>
+                    <SelectItem key={team.id} value={String(team.id)}>
                       {team.name}
                     </SelectItem>
                   ))}
