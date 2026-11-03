@@ -5,7 +5,6 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVa
 import getLeagueTeams from '@/lib/get-league-teams'
 import getOrganisationData from '@/lib/get-organisation-data'
 import getOrganisationLeagues from '@/lib/get-organisation-leagues'
-import { getUserData, getUserId } from '@/lib/get-user-data'
 import { supabase } from '@/lib/supabase'
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -40,7 +39,7 @@ const JoinOrg = () => {
       .select("*")
       .eq("profile_id", user?.id)
       .eq("status", "pending")
-      .single()
+      .maybeSingle() // Won't return an error if there are no rows found
 
     // Error handling
     if (existingRequestError) {
@@ -56,7 +55,10 @@ const JoinOrg = () => {
           .insert({
             profile_id: user?.id,
             role: selectedRole,
-            status: "pending" // Should be pending by default
+            status: "pending", // Should be pending by default
+            organisation_id: orgId,
+            league_id: selectedLeague,
+            team_id: selectedTeam,
         })
 
         // Code below to be removed so it is not reported as an error in Supabase, but for now it is useful to have it for testing purposes
@@ -65,18 +67,17 @@ const JoinOrg = () => {
           alert("There was an error sending your request. Please try again later.")
           return
         }
+        // Error handling
+        if (requestError) {
+          console.error("Error adding request to join.", requestError)
+        } else { // For testing only - to be deleted afterwards
+          console.log(requestData)
+        }
+  }
 
     }
 
     
-
-    // Error handling
-    if (requestError) {
-      console.error("Error adding request to join.", requestError)
-    } else { // For testing only - to be deleted afterwards
-      console.log(requestData)
-    }
-  }
 
   function handleRoleChange (role: string) {
     // Change the role
