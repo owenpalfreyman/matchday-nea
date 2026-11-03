@@ -34,13 +34,41 @@ const JoinOrg = () => {
     // Get the user ID
     const {data: { user }} = await supabase.auth.getUser()
 
-    const { data: requestData, error: requestError } = await supabase
+    // Ensure the user does not already have a pending request for any organisation
+    const { data: existingRequest, error: existingRequestError } = await supabase
       .from("requests")
-      .insert({
-        profile_id: user?.id,
-        role: selectedRole,
-        status: "pending" // Should be pending by default
-      })
+      .select("*")
+      .eq("profile_id", user?.id)
+      .eq("status", "pending")
+      .single()
+
+    // Error handling
+    if (existingRequestError) {
+      console.error("Error checking for existing request.", existingRequestError)
+    }
+
+    if (existingRequest) {
+      alert("You already have a pending request for an organisation. Please wait for it to be processed before sending another request.")
+      return
+    } else {
+        const { data: requestData, error: requestError } = await supabase
+          .from("requests")
+          .insert({
+            profile_id: user?.id,
+            role: selectedRole,
+            status: "pending" // Should be pending by default
+        })
+
+        // Code below to be removed so it is not reported as an error in Supabase, but for now it is useful to have it for testing purposes
+        if (requestError) {
+          console.error("Error adding request to join.", requestError)
+          alert("There was an error sending your request. Please try again later.")
+          return
+        }
+
+    }
+
+    
 
     // Error handling
     if (requestError) {
