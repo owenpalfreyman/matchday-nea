@@ -16,7 +16,7 @@ async function getUserStatus() {
     const { data: membership, error: membershipError } = await supabase
         .from("organisation_members")
         .select("*")
-        .eq("profile_id", user.id)
+        .eq("user_id", user.id)
         .maybeSingle() // Won't return an error if there are no rows found
 
     // Error checks
