@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from './ui/table'
 import { supabase } from '@/lib/supabase'
+import { getLeagueName, getOrganisationName, getTeamName } from '@/lib/convert-ids-names'
 
 type Request = {
   request_id: string
@@ -9,7 +10,13 @@ type Request = {
   league_id: string | null
   team_id: string | null
   status: string | null
+  organisation_name: string | null
+  league_name: string | null
+  team_name: string | null
 }
+
+// TODO: Add a button to cancel a request, which will delete the request from the database and update the table accordingly.
+// TODO: Styling
 
 const ViewMyRequests = () => {
   const [requests, setRequests] = useState<Request[]>([])
@@ -36,8 +43,18 @@ const ViewMyRequests = () => {
         return
       }
 
+      // Convert the IDs to names for each request
+      const requestsWithNames = await Promise.all(
+        (data ?? []).map(async (request) => ({
+          ...request,
+          organisation_name: request.organisation_id ? await getOrganisationName(request.organisation_id) : null,
+          league_name: request.league_id ? await getLeagueName(request.league_id) : null,
+          team_name: request.team_id ? await getTeamName(request.team_id) : null,
+        }))
+      )
+
       // Set requests so they can be used in the return
-      setRequests((data ?? []) as Request[])
+      setRequests(requestsWithNames as Request[])
     }
 
     void fetchRequests()
@@ -59,11 +76,11 @@ const ViewMyRequests = () => {
         {requests.length > 0 ? (
           requests.map((request) => (
             <TableRow key={request.request_id}>
-              <TableCell>{request.organisation_id}</TableCell>
-              <TableCell>{request.role}</TableCell>
-              <TableCell>{request.league_id ?? '-'}</TableCell>
-              <TableCell>{request.team_id ?? '-'}</TableCell>
-              <TableCell>{request.status}</TableCell>
+              <TableCell>{request.organisation_name}</TableCell>
+              <TableCell>{request.role ? request.role.charAt(0).toUpperCase() + request.role.slice(1) : '-'}</TableCell>
+              <TableCell>{request.league_name ?? '-'}</TableCell>
+              <TableCell>{request.team_name ?? '-'}</TableCell>
+              <TableCell>{request.status ? request.status.charAt(0).toUpperCase() + request.status.slice(1) : '-'}</TableCell>
             </TableRow>
           ))
         ) : (
