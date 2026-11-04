@@ -2,9 +2,12 @@ import { useEffect, useState } from 'react'
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from './ui/table'
 import { supabase } from '@/lib/supabase'
 import { getLeagueName, getOrganisationName, getTeamName } from '@/lib/convert-ids-names'
+import { Button } from './ui/button'
+import { Card, CardTitle } from './ui/card'
+import { TrashIcon } from 'lucide-react'
 
 type Request = {
-  request_id: string
+  id: string
   organisation_id: string | null
   role: string | null
   league_id: string | null
@@ -20,6 +23,26 @@ type Request = {
 
 const ViewMyRequests = () => {
   const [requests, setRequests] = useState<Request[]>([])
+
+  // Function to delete a request from the database and update the state
+  async function deleteRequest(id: string) {
+    // Database query
+    const { error } = await supabase
+      .from('requests')
+      .delete()
+      .eq('id', id)
+
+    // Error hadling for deleting a request
+    if (error) {
+      console.error('Error deleting request:', error)
+      return
+    }
+
+    // Set the state so the table updates without needing to refresh the page
+    setRequests((current) =>
+      current.filter((request) => request.id !== id)
+    )
+  }
 
   useEffect(() => {
     // Function to fetch the user's requests from the database
@@ -61,35 +84,42 @@ const ViewMyRequests = () => {
   }, [])
 
   return (
-    <Table>
-      <TableCaption>A list of your requests</TableCaption>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Organisation</TableHead>
-          <TableHead>Role</TableHead>
-          <TableHead>League</TableHead>
-          <TableHead>Team</TableHead>
-          <TableHead>Status</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {requests.length > 0 ? (
-          requests.map((request) => (
-            <TableRow key={request.request_id}>
-              <TableCell>{request.organisation_name}</TableCell>
-              <TableCell>{request.role ? request.role.charAt(0).toUpperCase() + request.role.slice(1) : '-'}</TableCell>
-              <TableCell>{request.league_name ?? '-'}</TableCell>
-              <TableCell>{request.team_name ?? '-'}</TableCell>
-              <TableCell>{request.status ? request.status.charAt(0).toUpperCase() + request.status.slice(1) : '-'}</TableCell>
-            </TableRow>
-          ))
-        ) : (
+    <Card className="w-full p-6">
+      <CardTitle className="text-xl">Current Applications</CardTitle>
+      <Table>
+        <TableCaption>A list of your requests</TableCaption>
+        <TableHeader>
           <TableRow>
-            <TableCell colSpan={5}>No requests found.</TableCell>
+            <TableHead>Organisation</TableHead>
+            <TableHead>Role</TableHead>
+            <TableHead>League</TableHead>
+            <TableHead>Team</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Actions</TableHead>
           </TableRow>
-        )}
-      </TableBody>
-    </Table>
+        </TableHeader>
+        <TableBody>
+          {requests.length > 0 ? (
+            requests.map((request) => (
+              <TableRow key={request.id}>
+                <TableCell>{request.organisation_name}</TableCell>
+                <TableCell>{request.role ? request.role.charAt(0).toUpperCase() + request.role.slice(1) : '-'}</TableCell>
+                <TableCell>{request.league_name ?? '-'}</TableCell>
+                <TableCell>{request.team_name ?? '-'}</TableCell>
+                <TableCell>{request.status ? request.status.charAt(0).toUpperCase() + request.status.slice(1) : '-'}</TableCell>
+                <TableCell>
+                  <Button onClick={() => deleteRequest(request.id)}><TrashIcon/></Button>
+                </TableCell>
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={5}>No requests found.</TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+    </Card>
   )
 }
 
