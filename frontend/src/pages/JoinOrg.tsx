@@ -1,4 +1,5 @@
 import JoinOrgForm from '@/components/JoinOrgForm'
+import ViewMyRequests from '@/components/ViewMyRequests'
 import getUserStatus from '@/lib/get-user-status'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -18,7 +19,12 @@ const JoinOrg = () => {
     checkUserStatus()
   }, [navigate])
 
-  return <JoinOrgForm />
+  return (
+    <>
+      <JoinOrgForm />
+      <ViewMyRequests />
+    </>
+  )
 }
 
 export default JoinOrg
