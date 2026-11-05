@@ -4,15 +4,20 @@ import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, Tabl
 import { Button } from './ui/button'
 import getOrganisationId from '@/lib/get-current-organisation-id'
 import { supabase } from '@/lib/supabase'
+import { getLeagueName, getOrganisationName, getTeamName } from '@/lib/convert-ids-names'
 
 // TODO: Function to comvert IDs to names
 
 type JoinRequest = {
     id: string
     role: string
+    organisation_id: string
     league_id: string | null
     team_id: string | null
     profiles: { display_name: string; email: string } | null
+    organisation_name: string | null
+    league_name: string | null
+    team_name: string | null
 }
 
 const RequestsTable = () => {
@@ -34,9 +39,19 @@ const RequestsTable = () => {
                 console.error("Error fetching requests", error)
                 return
             }
+            
+            // Convert the IDs to names for each request
+            const requestsWithNames = await Promise.all(
+                (data ?? []).map(async (request) => ({
+                    ...request,
+                    organisation_name: request.organisation_id ? await getOrganisationName(request.organisation_id) : null,
+                    league_name: request.league_id ? await getLeagueName(request.league_id) : null,
+                    team_name: request.team_id ? await getTeamName(request.team_id) : null,
+                }))
+            )
 
             // Set requests
-            setRequests(data as unknown as JoinRequest[])
+            setRequests(requestsWithNames as unknown as JoinRequest[])
         }
 
         // Call the function
@@ -83,8 +98,8 @@ const RequestsTable = () => {
                                 <TableRow key={request.id}>
                                     <TableCell>{request.profiles?.email}</TableCell>
                                     <TableCell>{request.role ? request.role.charAt(0).toUpperCase() + request.role.slice(1) : '-'}</TableCell>
-                                    <TableCell>{request.league_id ?? '-'}</TableCell>
-                                    <TableCell>{request.team_id ?? '-'}</TableCell>
+                                    <TableCell>{request.league_name ?? '-'}</TableCell>
+                                    <TableCell>{request.team_name ?? '-'}</TableCell>
                                     <TableCell className="flex gap-2">
                                         <Button size="sm" onClick={() => updateStatus(request.id, "accepted")}>Accept</Button>
                                         <Button size="sm" variant="outline" onClick={() => updateStatus(request.id, "rejected")}>Reject</Button>
