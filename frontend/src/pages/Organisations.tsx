@@ -1,4 +1,5 @@
 import CreateOrgForm from '@/components/CreateOrgForm'
+import RequestsTable from '@/components/RequestsTable'
 import SearchOrg from '@/components/SearchOrg'
 import { supabase } from '@/lib/supabase'
 import React, { useEffect, useState } from 'react'
@@ -33,7 +34,6 @@ const Organisations = () => {
       setOrg({ status: "none" }) // Change the state to show there is no user in the table
     } else {
       setOrg({ status: "member"})
-      
     }
   }
 
@@ -50,7 +50,7 @@ const Organisations = () => {
     </div>
   )
   if (org.status === "error") return <div>Error. Try refreshing the page.</div>
-  if (org.status === "member") return <div>Your organisation's page</div>
+  if (org.status === "member") return <RequestsTable />
 
   return (
     <div>Organisations</div>

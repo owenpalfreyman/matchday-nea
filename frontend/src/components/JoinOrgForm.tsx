@@ -196,11 +196,9 @@ const JoinOrgForm = () => {
                 </SelectGroup>
               </SelectContent>
             </Select>
-
-            <Button onClick={sendRequest}>Request to Join</Button>
           </Field>
         )}
-
+        <Button disabled={!selectedRole || (selectedRole !== "admin" && (!selectedLeague || !selectedTeam))} onClick={sendRequest}>Request to Join</Button>
       </CardContent>
     </Card>
   )
