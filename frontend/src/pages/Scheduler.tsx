@@ -35,8 +35,8 @@ const Scheduler = () => {
 	}, [leagueId])
 
 	// If no fixtures exist, render the GenerateFixtures component
-	if (hasFixtures === false) {
-		return <GenerateFixtures />
+	if (hasFixtures === false && leagueId) {
+		return <GenerateFixtures leagueId={leagueId} />
 	}
 
 	return <div>{hasFixtures ? 'Fixtures found' : 'Scheduler'}</div>
