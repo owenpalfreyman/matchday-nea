@@ -9,7 +9,7 @@ const getOrganisationId = async () => {
     // Find organisation ID from membership table
     const { data: membership, error: membershipError } = await supabase
         .from("organisation_members")
-        .select("organisation_id")
+        .select("organisation_id, role")
         .eq("user_id", user.id)
         .maybeSingle();
 

@@ -24,7 +24,7 @@ const SchedulerLeagues = () => {
 
                 // Check if the user has the 'admin' role, if not redirect to dashboard
                 if (role !== 'admin') {
-                    console.log(role);
+                    navigate('/dashboard');
                     return;
                 }
 
