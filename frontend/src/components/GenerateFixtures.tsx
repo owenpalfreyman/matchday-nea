@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Card, CardDescription, CardTitle } from './ui/card'
 import { Button } from './ui/button'
 import { generateFixtures, type NewFixture, type TeamInput } from '@/lib/generate-schedule'
+import getLeagueTeams from '@/lib/get-league-teams'
 import { Field, FieldContent, FieldDescription, FieldLabel, FieldLegend, FieldSet, FieldTitle } from './ui/field'
 import { RadioGroup, RadioGroupItem } from './ui/radio-group'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from './ui/select'
@@ -11,18 +12,46 @@ const formatItems = [
     { label: 'Double round robin', value: 'double' },
 ]
 
-const GenerateFixtures = () => {
+type GenerateFixturesProps = {
+    leagueId: string
+}
+
+const GenerateFixtures = ({ leagueId }: GenerateFixturesProps) => {
     const [teams, setTeams] = useState<TeamInput[]>([])
     const [format, setFormat] = useState<"single" | "double">("single")
     const [forceHomeVenue, setForceHomeVenue] = useState(undefined)
     const [fixtures, setFixtures] = useState<NewFixture[]>([])
+
+    useEffect(() => {
+        async function fetchTeams() {
+            const teamsData = await getLeagueTeams(leagueId)
+
+            if (!teamsData) {
+                setTeams([])
+                return
+            }
+
+            setTeams(
+                teamsData.map((team) => ({
+                    id: Number(team.id),
+                    home_venue_id: team.home_venue_id === null
+                        ? null
+                        : Number(team.home_venue_id),
+                }))
+            )
+        }
+
+        void fetchTeams()
+    }, [leagueId])
 
     function handleGenerate() {
         // Empty validation check
         if (forceHomeVenue === undefined) return
 
         // Otherwise run the function
-        setFixtures(generateFixtures(teams, { format, forceHomeVenue }))
+        const generatedFixtures = generateFixtures(teams, { format, forceHomeVenue })
+        setFixtures(generatedFixtures)
+        console.log('Generated fixtures:', generatedFixtures)
     }
     
     return (
