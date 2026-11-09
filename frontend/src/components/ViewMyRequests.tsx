@@ -18,9 +18,6 @@ type Request = {
   team_name: string | null
 }
 
-// TODO: Add a button to cancel a request, which will delete the request from the database and update the table accordingly.
-// TODO: Styling
-
 const ViewMyRequests = () => {
   const [requests, setRequests] = useState<Request[]>([])
 
