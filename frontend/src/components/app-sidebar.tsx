@@ -14,7 +14,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { Settings2Icon, LifeBuoyIcon, SendIcon, FrameIcon, PieChartIcon, MapIcon, TrophyIcon, Building2Icon } from "lucide-react"
+import { Settings2Icon, LifeBuoyIcon, SendIcon, FrameIcon, PieChartIcon, MapIcon, TrophyIcon, Building2Icon, CalendarIcon } from "lucide-react"
 import { Link } from "react-router-dom"
 
 const data = {
@@ -77,6 +77,11 @@ const data = {
       name: "Selection and Availability",
         url: "#",
       icon: <Settings2Icon />,
+    },
+    {
+      name: "Scheduler",
+      url: "/dashboard/scheduler",
+      icon: <CalendarIcon />,
     }
   ],
 }

@@ -15,6 +15,8 @@ import Venues from "./pages/Venues.tsx"
 import Venue from "./pages/Venue.tsx"
 import UsernameLogin from "./pages/EmailLogin.tsx"
 import JoinOrg from "./pages/JoinOrg.tsx"
+import Scheduler from "./pages/Scheduler.tsx"
+import SchedulerLeagues from "./pages/SchedulerLeagues.tsx"
 
 const router = createBrowserRouter([
   { path: "/", element: <App /> },
@@ -32,6 +34,8 @@ const router = createBrowserRouter([
         { path: "venues", element: <Venues /> },
         { path: "venues/:venueId", element: <Venue /> },
         { path: "join/:orgId", element: <JoinOrg /> },
+        { path: "scheduler", element: <SchedulerLeagues /> },
+        { path: "scheduler/:leagueId", element: <Scheduler /> },
       ],
     }]}
 ])
