@@ -23,6 +23,7 @@ const GenerateFixtures = ({ leagueId }: GenerateFixturesProps) => {
     const [fixtures, setFixtures] = useState<NewFixture[]>([])
 
     useEffect(() => {
+        // Function to get the teams in the lague
         async function fetchTeams() {
             const teamsData = await getLeagueTeams(leagueId)
 
@@ -31,6 +32,7 @@ const GenerateFixtures = ({ leagueId }: GenerateFixturesProps) => {
                 return
             }
 
+            // Set the teams with the relevant home venue ID
             setTeams(
                 teamsData.map((team) => ({
                     id: Number(team.id),
