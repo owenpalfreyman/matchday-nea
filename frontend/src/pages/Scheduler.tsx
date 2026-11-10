@@ -1,45 +1,33 @@
+import FixtureList, { type FixtureRow } from '@/components/FixtureList'
 import GenerateFixtures from '@/components/GenerateFixtures'
-import { supabase } from '@/lib/supabase'
-import { useEffect, useState } from 'react'
+import getLeagueFixtures from '@/lib/get-league-fixtures'
+import { useCallback, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 const Scheduler = () => {
 	const { leagueId } = useParams<{ leagueId: string }>()
-	const [hasFixtures, setHasFixtures] = useState<boolean | null>(null)
+	const [fixtures, setFixtures] = useState<FixtureRow[] | null>(null)
 
-	useEffect(() => {
-		// Function to get the fixtures
-		async function getFixtures() {
-			if (!leagueId) {
-				return
-			}
-
-			// Database query for fixtures
-			const { data: fixtures, error } = await supabase
-				.from('fixtures')
-				.select('*')
-				.eq('league_id', leagueId)
-				.maybeSingle()
-
-			// Error handling
-			if (error) {
-				console.error('Error fetching fixtures:', error)
-				return
-			}
-
-			// Fixtures is either true or false based on whether any exist
-			setHasFixtures(fixtures !== null)
+	const loadFixtures = useCallback(async () => {
+		// Check to make sure that there is a league ID
+		if (!leagueId) {
+			setFixtures([])
+			return
 		}
 
-		void getFixtures()
+		// Set the fixtures and call the getLeagueFixtures function
+		setFixtures(await getLeagueFixtures(Number(leagueId)))
 	}, [leagueId])
 
-	// If no fixtures exist, render the GenerateFixtures component
-	if (hasFixtures === false && leagueId) {
-		return <GenerateFixtures leagueId={leagueId} />
-	}
+	// Load the fixtures when the component mounts
+	useEffect(() => { void loadFixtures() }, [loadFixtures])
 
-	return <div>{hasFixtures ? 'Fixtures found' : 'Scheduler'}</div>
+	// Whiilst loading
+	if (fixtures === null) return <p>Loading...</p>
+
+	return fixtures.length === 0
+		? <GenerateFixtures leagueId={leagueId ?? ''} onGenerated={loadFixtures} />
+		: <FixtureList fixtures={fixtures} />
 }
 
 export default Scheduler

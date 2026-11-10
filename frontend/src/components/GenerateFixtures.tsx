@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { Card, CardDescription, CardTitle } from './ui/card'
 import { Button } from './ui/button'
-import { generateFixtures, type NewFixture, type TeamInput } from '@/lib/generate-schedule'
+import { generateFixtures, type TeamInput } from '@/lib/generate-schedule'
 import getLeagueTeams from '@/lib/get-league-teams'
 import { Field, FieldContent, FieldDescription, FieldLabel, FieldLegend, FieldSet, FieldTitle } from './ui/field'
 import { RadioGroup, RadioGroupItem } from './ui/radio-group'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from './ui/select'
+import saveFixtures from '@/lib/save-fixtures'
 
 const formatItems = [
     { label: 'Single round robin', value: 'single' },
@@ -14,13 +15,13 @@ const formatItems = [
 
 type GenerateFixturesProps = {
     leagueId: string
+    onGenerated: () => void | Promise<void>
 }
 
-const GenerateFixtures = ({ leagueId }: GenerateFixturesProps) => {
+const GenerateFixtures = ({ leagueId, onGenerated }: GenerateFixturesProps) => {
     const [teams, setTeams] = useState<TeamInput[]>([])
     const [format, setFormat] = useState<"single" | "double">("single")
     const [forceHomeVenue, setForceHomeVenue] = useState(undefined)
-    const [fixtures, setFixtures] = useState<NewFixture[]>([])
 
     useEffect(() => {
         // Function to get the teams in the lague
@@ -46,14 +47,19 @@ const GenerateFixtures = ({ leagueId }: GenerateFixturesProps) => {
         void fetchTeams()
     }, [leagueId])
 
-    function handleGenerate() {
+    async function handleGenerate() {
         // Empty validation check
         if (forceHomeVenue === undefined) return
 
         // Otherwise run the function
         const generatedFixtures = generateFixtures(teams, { format, forceHomeVenue })
-        setFixtures(generatedFixtures)
         console.log('Generated fixtures:', generatedFixtures)
+
+        const saved = await saveFixtures(Number(leagueId), generatedFixtures)
+        console.log(saved ? "Fixtures saved successfully." : "Failed to save fixtures.")
+        if (saved) {
+            await onGenerated()
+        }   
     }
     
     return (

@@ -4,7 +4,14 @@ async function getLeagueFixtures(leagueId: number) {
     // Database query for fixtures
     const { data: fixtures, error } = await supabase
         .from('fixtures')
-        .select('*')
+        // Join the teams table to get the home and away team names
+        .select(`id,
+            gameweek,
+            fixture_date,
+            start_time,
+            venue_id,
+            home_team:teams!home_team_id(name),
+            away_team:teams!away_team_id(name)`)
         .eq('league_id', leagueId)
 
     // Error handling
