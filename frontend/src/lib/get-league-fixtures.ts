@@ -10,6 +10,7 @@ async function getLeagueFixtures(leagueId: number) {
             fixture_date,
             start_time,
             venue_id,
+            venue:venues!venue_id(name),
             home_team:teams!home_team_id(name),
             away_team:teams!away_team_id(name)`)
         .eq('league_id', leagueId)
